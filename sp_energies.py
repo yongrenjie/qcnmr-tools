@@ -10,7 +10,7 @@ def get_args():
     parser.add_argument("filename", action='store', help='.out file to analyse')
     parser.add_argument("-t", "--threshold", type=int, default=0, help="Specify threshold energy (kcal/mol) (default = 3)")
     parser.add_argument("-p", "--plot", action='store_true', help='Plot energies of all conformers')
-    parser.add_argument("-csv", "--csv", action='store_true', help='Output sorted conformers to csv file')
+    parser.add_argument("-c", "--csv", action='store_true', help='Output sorted conformers to csv file')
     return parser.parse_args()
 
 if __name__ == '__main__':
