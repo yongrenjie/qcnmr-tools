@@ -28,7 +28,7 @@ def print_bash_script(xyz_filename, solv, nprocs):
         print('cp coord $SCR', file=bash_script)
         print('#', file=bash_script)
         print('cd $SCR', file=bash_script)
-        print('/u/fd/linc3717/bin/xtb-190208/bin/crest -T {} -nmr -g {} > $ORIG/{}_crest.out'.format(nprocs, solv, base_name), file=bash_script)
+        print('crest -T {} -nmr -g {} > $ORIG/{}_crest.out'.format(nprocs, solv, base_name), file=bash_script)
         print('rm -f *.tmp', file=bash_script)
         print('cp -R * $ORIG', file=bash_script)
         print('cd /', file=bash_script)
