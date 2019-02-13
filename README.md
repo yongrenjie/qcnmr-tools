@@ -1,6 +1,8 @@
 # qcnmr-tools
 Assorted scripts (Python 3) to aid with calculation of NMR properties.
 
+Use the optional argument `-h` to find out more about what these can do!
+
 **allxyz_to_inp**
 
 Converts an .allxyz file into multiple ORCA .inp files. Keywords are hardcoded.
@@ -11,13 +13,16 @@ Converts an .allxyz file into individual .xyz files for each structure, as well 
 
 Avogadro chokes on the .allxyz file format but opens the large .xyz file just fine (to scroll through the structures, use Extensions > Animation).
 
+**crest-energies**
+
+Extracts and manipulates energies from a CREST calculation.
+
 **sp-energies**
 
-Takes as input an .out file from an ORCA single point calculation on an .allxyz file. The script then does two things:
-1. Plots the energy of each input structure in kcal/mol relative to the lowest energy structure.
-2. Prints a list of conformers below a certain threshold energy.
+Extracts and manipulates energies from an ORCA single point calculation on an .allxyz file.
 
 **qcrest**
 
 Automatically takes an .xyz file (in Angstroms), converts it to a `coord` file (in Bohrs), prints a submission script for crest, and submits the job using the newly generated `coord` file.
+
 Requires that the directory with crest is added to `$PATH`.

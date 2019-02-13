@@ -9,7 +9,7 @@ def get_args():
     parser.add_argument("filename", action='store', help='.out file to analyse')
     parser.add_argument("-t", "--threshold", type=int, default=0, help="Specify threshold energy (kcal/mol) (default = 3)")
     parser.add_argument("-p", "--plot", action='store_true', help='Plot energies of all conformers')
-    parser.add_argument("-c", "--csv", action='store_true', help='Output sorted conformers to csv file')
+    parser.add_argument("-c", "--csv", action='store_true', help='Output all conformers to csv file')
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -18,15 +18,21 @@ if __name__ == '__main__':
     sp_outputfile = args.filename
     conformer_numbers = []
     conformer_energies = []
+    energy_block = False
     with open(sp_outputfile, 'r') as outputfile:
         for line in outputfile:
-            if line.strip().startswith("MULTIPLE XYZ STEP"):
-                conformer_numbers.append(int(line.split()[-1]))
-            if line.strip().startswith("FINAL SINGLE POINT ENERGY"):
-                conformer_energies.append(float(line.split()[-1]))
+            if line.strip().startswith("number of unique conformers for further calc"):
+                energy_block = True
+            if line.strip().startswith("NMR mode"):
+                energy_block = False
+            if energy_block:
+                if line.split()[0].isdigit():
+                    conformer_numbers.append(int(line.split()[0]))
+                    conformer_energies.append(float(line.split()[1]))
 
     all_conformers = pd.DataFrame({'num': conformer_numbers, 'energy': conformer_energies})
-    all_conformers['energy'] = (all_conformers['energy'] - all_conformers['energy'].min()) * HARTREE_TO_KCAL
+    # all_conformers['energy'] = (all_conformers['energy'] - all_conformers['energy'].min()) * HARTREE_TO_KCAL
+    # Not needed for CREST output, already in kcal/mol
 
     if args.plot:
         all_conformers.plot(x='num', y='energy', kind='line')
