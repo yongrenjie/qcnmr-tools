@@ -5,7 +5,7 @@ import argparse
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("filenames", action='store', help='.inp file(s) sumbit to the queue', nargs='+')
+    parser.add_argument("filename", action='store', help='.xyz file(s) to convert and submit')
     parser.add_argument("-np", type=int, default=0, help="Override the number of cores specified in the input file")
     return parser.parse_args()
 
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     solvent = 'methanol'
     np = 4
     args = get_args()
-    for filename in args.filenames:
+    for filename in args.filename:
         xyz_to_coord(filename)
         sh_filename = print_bash_script(filename, solvent, np)
         qsub_bash_script(sh_filename)
