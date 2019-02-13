@@ -16,21 +16,50 @@ if __name__ == '__main__':
     args = get_args()
     threshold_kcal = args.threshold
     sp_outputfile = args.filename
+
+    # determine what output file we are reading (CREST or ORCA)
+    output_file_determined = False
+    output_file_type = ""
+    while not output_file_determined:
+        with open(sp_outputfile, 'r') as outputfile:
+            for line in outputfile:
+                if "C R E S T" in line:
+                    output_file_type = "crest"
+                    output_file_determined = True
+                    break
+                elif "O R C A" in line:
+                    output_file_type = "orca"
+                    output_file_determined = True
+                    break
+
     conformer_numbers = []
     conformer_energies = []
-    energy_block = False
-    with open(sp_outputfile, 'r') as outputfile:
-        for line in outputfile:
-            if line.strip().startswith("number of unique conformers for further calc"):
-                energy_block = True
-            if line.strip().startswith("NMR mode"):
-                energy_block = False
-            if energy_block:
-                if line.split()[0].isdigit():
-                    conformer_numbers.append(int(line.split()[0]))
-                    conformer_energies.append(float(line.split()[1]))
 
-    all_conformers = pd.DataFrame({'num': conformer_numbers, 'energy': conformer_energies})
+    if output_file_type == "crest":
+        energy_block = False
+        with open(sp_outputfile, 'r') as outputfile:
+            for line in outputfile:
+                if line.strip().startswith("number of unique conformers for further calc"):
+                    energy_block = True
+                if line.strip().startswith("NMR mode"):
+                    energy_block = False
+                if energy_block:
+                    if line.split()[0].isdigit():
+                        conformer_numbers.append(int(line.split()[0]))
+                        conformer_energies.append(float(line.split()[1]))
+        all_conformers = pd.DataFrame({'num': conformer_numbers, 'energy': conformer_energies})
+
+    elif output_file_type == "orca":
+        with open(sp_outputfile, 'r') as outputfile:
+            for line in outputfile:
+                if line.strip().startswith("MULTIPLE XYZ STEP"):
+                    conformer_numbers.append(int(line.split()[-1]))
+                if line.strip().startswith("FINAL SINGLE POINT ENERGY"):
+                    conformer_energies.append(float(line.split()[-1]))
+
+        all_conformers = pd.DataFrame({'num': conformer_numbers, 'energy': conformer_energies})
+        all_conformers['energy'] = (all_conformers['energy'] - all_conformers['energy'].min()) * HARTREE_TO_KCAL
+
     # all_conformers['energy'] = (all_conformers['energy'] - all_conformers['energy'].min()) * HARTREE_TO_KCAL
     # Not needed for CREST output, already in kcal/mol
     print(all_conformers)
