@@ -1,6 +1,15 @@
 # qcnmr-tools
 Assorted scripts (Python 3) to aid with calculation of NMR properties.
 
+**allxyz_to_inp**
+
+Converts an .allxyz file into multiple ORCA .inp files. Keywords are hardcoded.
+
+**allxyz_to_xyz**
+
+Converts an .allxyz file into individual .xyz files for each structure, as well as one large .xyz file containing all structures.
+
+Avogadro chokes on the .allxyz file format but opens the large .xyz file just fine (to scroll through the structures, use Extensions > Animation).
 
 **sp-energies**
 
