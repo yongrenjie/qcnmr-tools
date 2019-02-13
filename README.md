@@ -21,6 +21,10 @@ Extracts and manipulates energies from a CREST calculation.
 
 Extracts and manipulates energies from an ORCA single point calculation on an .allxyz file.
 
+**plot_conformer_energies**
+
+Reads energies from csv files produced by the previous two scripts (use them with `-c` to generate the csv files) and plots them on a graph.
+
 **qcrest**
 
 Automatically takes an .xyz file (in Angstroms), converts it to a `coord` file (in Bohrs), prints a submission script for crest, and submits the job using the newly generated `coord` file.
