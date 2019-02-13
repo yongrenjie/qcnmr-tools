@@ -1,6 +1,7 @@
 import argparse
 import matplotlib.pyplot as plt
 import pandas as pd
+import sys
 
 HARTREE_TO_KCAL = 627.509
 
@@ -27,10 +28,13 @@ if __name__ == '__main__':
                     output_file_type = "crest"
                     output_file_determined = True
                     break
-                elif "O R C A" in line:
+                elif "O   R   C   A" in line:
                     output_file_type = "orca"
                     output_file_determined = True
                     break
+            else:
+                output_file_determined = True
+                sys.exit("Could not determine output file type.")
 
     conformer_numbers = []
     conformer_energies = []
