@@ -21,7 +21,6 @@ def print_bash_script(xyz_filename, solv, nprocs):
         print('#$ -l s_rt=360:00:00', file=bash_script)
         print('#', file=bash_script)
         print('module load mpi/openmpi3-x86_64', file=bash_script)
-        print('export PATH=/u/fd/linc3717/bin/xtb-190208/bin:$PATH', file=bash_script)
         print('export ORIG=$PWD', file=bash_script)
         print('export SCR=$TMPDIR', file=bash_script)
         print('mkdir -p $SCR', file=bash_script)
