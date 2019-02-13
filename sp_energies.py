@@ -1,13 +1,21 @@
-import sys
+import argparse
 import matplotlib.pyplot as plt
 import numpy as np
 
 HARTREE_TO_KCAL = 627.509
 
-def main():
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("filename", action='store', help='.out file to analyse')
+    parser.add_argument("-t", "--threshold", type=int, default=3, help="Specify threshold energy (kcal/mol) (default 3)")
+    return parser.parse_args()
+
+if __name__ == '__main__':
+    args = get_args()
+    threshold_kcal = args.threshold
+    sp_outputfile = args.filename
     conformer_numbers = np.array([])
     conformer_energies = np.array([])
-    sp_outputfile = sys.argv[1]
     with open(sp_outputfile, 'r') as outputfile:
         for line in outputfile:
             if line.strip().startswith("MULTIPLE XYZ STEP"):
@@ -23,4 +31,4 @@ def main():
     print("out of {} conformers {} are < {} kcal/mol from lowest energy".format(conformer_numbers[-1], len(np.where(conformer_energies < threshold_kcal)[0]), threshold_kcal))
     return 0
 
-main()
+
