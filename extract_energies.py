@@ -8,9 +8,9 @@ HARTREE_TO_KCAL = 627.509
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("filename", action='store', help='.out file to analyse')
-    parser.add_argument("-t", "--threshold", type=int, default=0, help="Specify threshold energy (kcal/mol)")
-    parser.add_argument("-p", "--plot", action='store_true', help='Plot energies of all conformers')
-    parser.add_argument("-c", "--csv", action='store_true', help='Output all conformers to csv file')
+    parser.add_argument("-t", "--threshold", type=int, default=0, help="Finds conformers within THRESHOLD kcal/mol of the lowest energy conformer and prints them to a csv file.")
+    parser.add_argument("-p", "--plot", action='store_true', help='Plot energies of all conformers.')
+    parser.add_argument("-c", "--csv", action='store_true', help='Output all conformers to a csv file.')
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -64,8 +64,6 @@ if __name__ == '__main__':
         all_conformers = pd.DataFrame({'num': conformer_numbers, 'energy': conformer_energies})
         all_conformers['energy'] = (all_conformers['energy'] - all_conformers['energy'].min()) * HARTREE_TO_KCAL
 
-    # all_conformers['energy'] = (all_conformers['energy'] - all_conformers['energy'].min()) * HARTREE_TO_KCAL
-    # Not needed for CREST output, already in kcal/mol
     print(all_conformers)
 
     if args.plot:
