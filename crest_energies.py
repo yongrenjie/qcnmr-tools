@@ -7,7 +7,7 @@ HARTREE_TO_KCAL = 627.509
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("filename", action='store', help='.out file to analyse')
-    parser.add_argument("-t", "--threshold", type=int, default=0, help="Specify threshold energy (kcal/mol) (default = 3)")
+    parser.add_argument("-t", "--threshold", type=int, default=0, help="Specify threshold energy (kcal/mol)")
     parser.add_argument("-p", "--plot", action='store_true', help='Plot energies of all conformers')
     parser.add_argument("-c", "--csv", action='store_true', help='Output all conformers to csv file')
     return parser.parse_args()
@@ -47,6 +47,11 @@ if __name__ == '__main__':
         filtered_conformers = filtered_conformers.reset_index(drop=True)
         print(filtered_conformers)
 
+        csv_filename = sp_outputfile.rstrip(".out") + "_filtered.csv"
+        filtered_conformers.to_csv(csv_filename, columns=['num','energy'])
+        print("Conformers within {} kcal/mol written to {}.".format(threshold_kcal, csv_filename))
+
     if args.csv:
         csv_filename = sp_outputfile.replace(".out", ".csv")
         all_conformers.to_csv(csv_filename, columns=['num','energy'])
+        print("All conformers written to {}.".format(csv_filename))
