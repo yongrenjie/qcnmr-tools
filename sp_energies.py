@@ -7,7 +7,7 @@ HARTREE_TO_KCAL = 627.509
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("filename", action='store', help='.out file to analyse')
-    parser.add_argument("-t", "--threshold", type=int, default=3, help="Specify threshold energy (kcal/mol) (default 3)")
+    parser.add_argument("-t", "--threshold", type=int, default=3, help="Specify threshold energy (kcal/mol) (default = 3)")
     return parser.parse_args()
 
 if __name__ == '__main__':
