@@ -29,6 +29,3 @@ if __name__ == '__main__':
     plt.show()
     threshold_kcal = 3
     print("out of {} conformers {} are < {} kcal/mol from lowest energy".format(conformer_numbers[-1], len(np.where(conformer_energies < threshold_kcal)[0]), threshold_kcal))
-    return 0
-
-
