@@ -27,6 +27,7 @@ if __name__ == '__main__':
 
     all_conformers = pd.DataFrame({'num': conformer_numbers, 'energy': conformer_energies})
     all_conformers['energy'] = (all_conformers['energy'] - all_conformers['energy'].min()) * HARTREE_TO_KCAL
+    print(all_conformers)
 
     if args.plot:
         all_conformers.plot(x='num', y='energy', kind='line')
