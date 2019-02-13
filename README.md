@@ -13,13 +13,9 @@ Converts an .allxyz file into individual .xyz files for each structure, as well 
 
 Avogadro chokes on the .allxyz file format but opens the large .xyz file just fine (to scroll through the structures, use Extensions > Animation).
 
-**crest-energies**
+**extract-energies**
 
-Extracts and manipulates energies from a CREST calculation.
-
-**sp-energies**
-
-Extracts and manipulates energies from an ORCA single point calculation on an .allxyz file.
+Extracts and manipulates energies from (either) a CREST output file, or an ORCA single point calculation on an .allxyz file. Use `-h` with this, it has several useful functions.
 
 **plot_conformer_energies**
 
