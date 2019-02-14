@@ -20,7 +20,7 @@ def print_bash_script(xyz_filename):
         print('#', file=bash_script)
         print('#$ -cwd', file=bash_script)
         print('#', file=bash_script)
-        print('#$ -pe smp {}'.format(nprocs), file=bash_script)
+        print('#$ -pe smp {}'.format(args.threads), file=bash_script)
         print('#$ -l s_rt=360:00:00', file=bash_script)
         print('#', file=bash_script)
         print('module load mpi/openmpi3-x86_64', file=bash_script)
