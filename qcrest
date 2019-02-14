@@ -13,7 +13,6 @@ def get_args():
 
 def print_bash_script(xyz_filename):
     args = get_args()
-
     base_name = xyz_filename.rstrip('.xyz')
     sh_filename = str(xyz_filename.replace('.xyz', '.sh'))
     with open(sh_filename, 'w') as bash_script:
@@ -66,6 +65,8 @@ def xyz_to_coord(xyz_filename):
         print("$end", file=coord_file)
 
 if __name__ == '__main__':
+    args = get_args()
+    xyzfile = args.filename
     xyz_to_coord(xyzfile)
     sh_filename = print_bash_script(xyzfile)
     qsub_bash_script(sh_filename)
