@@ -31,7 +31,7 @@ if __name__ == '__main__':
                     output_file_determined = True
                     break
                 elif "O   R   C   A" in line:
-                    output_file_type = "orca"
+                    output_file_type = "orca_sp"
                     output_file_determined = True
                     break
             else:
@@ -55,7 +55,7 @@ if __name__ == '__main__':
                         conformer_energies.append(float(line.split()[1]))
         all_conformers = pd.DataFrame({'num': conformer_numbers, 'energy': conformer_energies})
 
-    elif output_file_type == "orca":
+    elif output_file_type == "orca_sp":
         with open(sp_outputfile, 'r') as outputfile:
             for line in outputfile:
                 if line.strip().startswith("MULTIPLE XYZ STEP"):
