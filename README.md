@@ -18,7 +18,7 @@ The NMR calculation workflow is adapted from [Grimme *et al.*, *Angew. Chem. Int
 
  - The script `extract_energies.py` will help greatly with this step. By using the command line argument `-t X`, it will automatically output a csv file containing a list of conformers below X kcal/mol (relative to the lowest-energy conformer). Grimme uses X = 3.
  - This csv file can then be read by `filter_allxyz.py` which extracts only the desired conformers from `crest_conformers.allxyz` and places them in a new allxyz file.
- - At this stage, to produce some graphics similar to those found in Grimme's SI, the script `plot_conformer_energies.py` is capable of reading in multiple csv files. It will then plot the energies of each conformer at different levels of theory (one csv file per level of theory). This is useful for checking whether CREST is indeed finding all or most of the low-energy conformers. There is still some work to be done in terms of making the plot prettier, but for now it is functional.
+ - At this stage, to produce some graphics similar to those found in Grimme's SI, the script `plot_energies_from_csv.py` is capable of reading in multiple csv files. It will then plot the energies of each conformer at different levels of theory (one csv file per level of theory). This is useful for checking whether CREST is indeed finding all or most of the low-energy conformers. There is still some work to be done in terms of making the plot prettier, but for now it is functional.
 
 4. The filtered conformers are subjected to DFT optimisation at a cheap level of theory (here again TPSS/def2-SVP/D3BJ/CPCM(Methanol)).
 
