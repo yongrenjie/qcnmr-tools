@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
-import sys
-import os
 import re
+import argparse
 
 def get_args():
     parser = argparse.ArgumentParser()
