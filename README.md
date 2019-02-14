@@ -22,7 +22,8 @@ The NMR calculation workflow is adapted from [Grimme *et al.*, *Angew. Chem. Int
 
 4. The filtered conformers are subjected to DFT optimisation at a cheap level of theory (here again TPSS/def2-SVP/D3BJ/CPCM(Methanol)).
 
- - As described previously, `filter_allxyz.py` will produce the filtered allxyz file so that an ORCA job can be run using it.
+ - As before, `extract_energies.py` will plot/display the energies as desired.
+ - Again, `filter_allxyz.py` (in combination with the csv file which `extract_energies.py` provides) will produce the filtered allxyz file so that an ORCA job can be run using it.
 
 5. In Grimme's paper the authors filter the conformer ensemble again, based on the energies of the optimised structures.
 
