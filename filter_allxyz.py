@@ -10,7 +10,10 @@ if __name__ == '__main__':
     args = get_args()
     csv_file = args.csv_filename
     allxyz_file = args.allxyz_filename
-    output_allxyz_file = allxyz_file.replace(".allxyz", "_filtered.allxyz")
+
+    base_name = csv_file.rstrip(".csv").split("/")[-1]
+    short_base_name = base_name.rstrip("_filtered")
+    output_allxyz_file = csv_file.replace(".csv", ".allxyz")
 
     filtered_conformer_numbers = []
     filtered_conformer_energies = []
@@ -23,7 +26,7 @@ if __name__ == '__main__':
     print()
     print("List of accepted conformers: {}".format(sorted(filtered_conformer_numbers)))
     print()
-    
+
     with open(allxyz_file, 'r') as unfiltered_allxyz:
         conformer_count = 1
         comment_line = False
@@ -33,7 +36,8 @@ if __name__ == '__main__':
                 conformer_count = conformer_count + 1
             if conformer_count in filtered_conformer_numbers:
                 if comment_line:
-                    print("    Conformer {}; {}".format(conformer_count, line.strip()), file=filtered_allxyz)
+                    base_name_energy = filtered_conformer_energies[filtered_conformer_numbers.index(conformer_count)]
+                    print("    Conformer {}; {}; {}: {}".format(conformer_count, line.strip(), short_base_name, base_name_energy), file=filtered_allxyz)
                     comment_line = False
                 elif line.strip().isdigit():
                     print(line.rstrip("\n"), file=filtered_allxyz)
