@@ -65,7 +65,6 @@ if __name__ == '__main__':
         plt.xlabel(args.earlier_csv.rstrip(".csv") + " energy (kcal/mol)")
         plt.ylabel(args.later_csv.rstrip(".csv") + " energy (kcal/mol)")
         plt.show()
-        fig.savefig("figure.png")
     else:
         fig, ax = plt.subplots()
         ax.scatter(earlier_energies, later_energies, s=5)

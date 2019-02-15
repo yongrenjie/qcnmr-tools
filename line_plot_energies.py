@@ -57,4 +57,5 @@ if __name__ == '__main__':
     print(full_df)
     column_names = list(full_df.columns)
     full_df.plot(x=0, y=column_names[1:], linewidth=0.75)
+    fig, ax = plt.subplots()
     plt.show()
