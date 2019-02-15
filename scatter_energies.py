@@ -19,6 +19,10 @@ def get_args():
                         action='store',
                         help='Energy cutoff (in kcal/mol) for the next round of filtering. '
                              'For more explanation see the README.')
+    parser.add_argument('-d',
+                        "--diagonal",
+                        action="store_true",
+                        help="Plots a y = x line.")
     return parser.parse_args()
 
 '''
@@ -52,22 +56,23 @@ if __name__ == '__main__':
     earlier_energies = earlier_energies - np.amin(earlier_energies)
     later_energies = later_energies - np.amin(later_energies)
 
+    fig, ax = plt.subplots()
+
     if args.threshold:
         earlier_energies_pass = earlier_energies[later_energies <= args.threshold]
         later_energies_pass = later_energies[later_energies <= args.threshold]
         earlier_energies_fail = earlier_energies[later_energies > args.threshold]
         later_energies_fail = later_energies[later_energies > args.threshold]
 
-        fig, ax = plt.subplots()
         ax.scatter(earlier_energies_pass, later_energies_pass, s=12, color='green')
         ax.scatter(earlier_energies_fail, later_energies_fail, s=4, color='red')
         ax.plot([0, np.amax(earlier_energies)], [args.threshold, args.threshold], linewidth=0.9)
-        plt.xlabel(args.earlier_csv.rstrip(".csv") + " energy (kcal/mol)")
-        plt.ylabel(args.later_csv.rstrip(".csv") + " energy (kcal/mol)")
-        plt.show()
     else:
-        fig, ax = plt.subplots()
-        ax.scatter(earlier_energies, later_energies, s=5)
-        plt.xlabel(args.earlier_csv.rstrip(".csv") + " energy (kcal/mol)")
-        plt.ylabel(args.later_csv.rstrip(".csv") + " energy (kcal/mol)")
-        plt.show()
+        ax.scatter(earlier_energies, later_energies, s=10)
+
+    if args.diagonal:
+        ax.plot([0, max(np.amax(earlier_energies), np.amax(later_energies))], [0, max(np.amax(earlier_energies), np.amax(later_energies))], linewidth=0.9,  color='orange')
+
+    plt.xlabel(args.earlier_csv.rstrip(".csv") + " energy (kcal/mol)")
+    plt.ylabel(args.later_csv.rstrip(".csv") + " energy (kcal/mol)")
+    plt.show()
