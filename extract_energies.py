@@ -102,15 +102,15 @@ if __name__ == '__main__':
     if args.threshold > 0:
         threshold_kcal = args.threshold
         filtered_conformers = all_conformers[all_conformers['energy'] <= threshold_kcal]
-        filtered_conformers = filtered_conformers.sort_values('energy')
+        filtered_conformers = filtered_conformers.sort_values('num')
         filtered_conformers = filtered_conformers.reset_index(drop=True)
         print(filtered_conformers)
 
         csv_filename = output_file.rstrip(".out") + "_filtered.csv"
-        filtered_conformers.to_csv(csv_filename, columns=['num','energy'])
+        filtered_conformers.to_csv(csv_filename, columns=['num', 'energy'])
         print("Conformers within {} kcal/mol written to {}.".format(threshold_kcal, csv_filename))
 
     if args.csv:
         csv_filename = output_file.replace(".out", ".csv")
-        all_conformers.to_csv(csv_filename, columns=['num','energy'])
+        all_conformers.to_csv(csv_filename, columns=['num', 'energy'])
         print("All conformers written to {}.".format(csv_filename))
