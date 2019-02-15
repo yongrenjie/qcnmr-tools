@@ -52,10 +52,9 @@ if __name__ == '__main__':
 
     column_names = list(full_df.columns)
 
-    args.line:
-        for column in full_df[column_names[1:]]:
-            full_df[column] = full_df[column] - full_df[column][0]
-        print(full_df)
-        column_names = list(full_df.columns)
-        full_df.plot(x=0, y=column_names[1:], linewidth=0.75)
-        plt.show()
+    for column in full_df[column_names[1:]]:
+        full_df[column] = full_df[column] - full_df[column][0]
+    print(full_df)
+    column_names = list(full_df.columns)
+    full_df.plot(x=0, y=column_names[1:], linewidth=0.75)
+    plt.show()
