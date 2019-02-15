@@ -2,6 +2,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.lines as mlines
 import argparse
 
 def get_args():
@@ -44,7 +45,6 @@ def get_energies(file):
 
 if __name__ == '__main__':
     args = get_args()
-    full_df = pd.DataFrame()
 
     earlier_energies = np.array(get_energies(args.earlier_csv))
     later_energies = np.array(get_energies(args.later_csv))
@@ -52,12 +52,23 @@ if __name__ == '__main__':
     earlier_energies = earlier_energies - np.amin(earlier_energies)
     later_energies = later_energies - np.amin(later_energies)
 
-    fig, ax = plt.subplots()
-    ax.plot(earlier_energies, later_energies)
+    if args.threshold:
+        earlier_energies_pass = earlier_energies[later_energies <= args.threshold]
+        later_energies_pass = later_energies[later_energies <= args.threshold]
+        earlier_energies_fail = earlier_energies[later_energies > args.threshold]
+        later_energies_fail = later_energies[later_energies > args.threshold]
 
-    for column in full_df[column_names[1:]]:
-        full_df[column] = full_df[column] - full_df[column].min()
-        print(full_df)
-        column_names = list(full_df.columns)
-        full_df.plot(x=1, y=2, kind="scatter", s=4)
+        fig, ax = plt.subplots()
+        ax.scatter(earlier_energies_pass, later_energies_pass, s=12, color='green')
+        ax.scatter(earlier_energies_fail, later_energies_fail, s=4, color='red')
+        ax.plot([0, np.amax(earlier_energies)], [args.threshold, args.threshold], linewidth=0.9)
+        plt.xlabel(args.earlier_csv.rstrip(".csv") + " energy (kcal/mol)")
+        plt.ylabel(args.later_csv.rstrip(".csv") + " energy (kcal/mol)")
+        plt.show()
+        fig.savefig("figure.png")
+    else:
+        fig, ax = plt.subplots()
+        ax.scatter(earlier_energies, later_energies, s=5)
+        plt.xlabel(args.earlier_csv.rstrip(".csv") + " energy (kcal/mol)")
+        plt.ylabel(args.later_csv.rstrip(".csv") + " energy (kcal/mol)")
         plt.show()
