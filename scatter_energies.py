@@ -18,7 +18,7 @@ def get_args():
                         type=int,
                         action='store',
                         help='Energy cutoff (in kcal/mol) for the next round of filtering. '
-                             'For more explanation see the comments in the source code.')
+                             'For more explanation see the README.')
     return parser.parse_args()
 
 '''
