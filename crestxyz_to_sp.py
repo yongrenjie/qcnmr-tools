@@ -30,7 +30,7 @@ if __name__ == '__main__':
                 output_file_number = output_file_number + 1
                 output_file = open('crest_conformers{}.allxyz'.format(output_file_number), 'w')
                 check_output_number = False
-            if line_number > 1 and number_of_atoms_found:
+            if line_number > 1 and number_of_atoms_found and check_output_number:
                 print(">", file=output_file)
                 print(line.rstrip("\n"), file=output_file)
             elif energy_found:
