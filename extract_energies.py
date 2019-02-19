@@ -66,9 +66,11 @@ if __name__ == '__main__':
 
     elif output_file_type == "orca_sp":
         with open(output_file, 'r') as outputfile:
+            conformer_number = 0
             for line in outputfile:
                 if "MULTIPLE XYZ STEP" in line:
-                    conformer_numbers.append(int(line.split()[-1]))
+                    conformer_number = conformer_number + 1
+                    conformer_numbers.append(conformer_number)
                 if "FINAL SINGLE POINT ENERGY" in line:
                     conformer_energies.append(float(line.split()[-1]))
 
@@ -78,13 +80,15 @@ if __name__ == '__main__':
     elif output_file_type == "orca_opt":
         print("opt file found")
         with open(output_file, 'r') as outputfile:
+            conformer_number = 0
             converged = False
             for line in outputfile:
                 if "FINAL ENERGY EVALUATION AT THE STATIONARY POINT" in line:
                     converged = True
                 if "MULTIPLE XYZ OPTIMIZATION STRUCTURE" in line:
                     converged = False
-                    conformer_numbers.append(int(line.split()[-2]))
+                    conformer_number = conformer_number + 1
+                    conformer_numbers.append(conformer_number)
                 if converged and "FINAL SINGLE POINT ENERGY" in line:
                     conformer_energies.append(float(line.split()[-1]))
 
