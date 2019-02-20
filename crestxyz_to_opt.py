@@ -17,12 +17,14 @@ if __name__ == '__main__':
     keywords = "! TPSS def2-SVP D3BJ CPCM(Methanol) PAL4 Opt NumFreq"
 
     allowed_conformers = []
+    allowed_conformer_energies = []
     with open(csv_file, 'r') as filter_file:
         line_number = 0
         for line in filter_file:
             line_number = line_number + 1
             if line_number > 1:
                 allowed_conformers.append(int(line.split(",")[1]))
+                allowed_conformer_energies.append(float(line.split(",")[2]))
     print(allowed_conformers)
 
     with open(crest_file, 'r') as crest_xyz_file:
@@ -48,7 +50,9 @@ if __name__ == '__main__':
                     print(keywords, file=output_file)
                     print("", file=output_file)
                 elif energy_found:
-                    print("#  Conf {}; GFN-xTB: {}".format(conformer_number, energy_found.group(1)), file=output_file)
+                    print("#  Conf {}".format(conformer_number), file=output_file)
+                    print("#  S1-CREST: {}".format(energy_found.group(1)), file=output_file)
+                    print("#  S2-SP: {}".format(allowed_conformer_energies[allowed_conformers.index(conformer_number)]), file=output_file)
                     print("* xyz 0 1", file=output_file)
                 else:
                     print(line.rstrip("\n"), file=output_file)
