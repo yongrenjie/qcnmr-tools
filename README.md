@@ -6,20 +6,27 @@ The NMR calculation workflow is adapted from [Grimme *et al.*, *Angew. Chem. Int
 1. Generate a conformer-rotamer ensemble using CREST.
 
  - `qcrest` is useful here. It takes an .xyz file (in Angstroms), automatically converts it to a `coord` file (in Bohrs), prints a submission script for CREST, and submits the job to the cluster using the newly generated `coord` file. In order for this to work, the directory containing CREST must be added to `$PATH`.
- - The default energy threshold in CREST is 6 kcal/mol, i.e. it does not return any conformers above this threshold. This can be set manually by changing the code in `qcrest`. Right now this cannot be set from the command line using `qcrest`. However, solvent (GBSA) as well as the number of threads can be set from the command line. Use `qcrest -h` for more information.
- - The output of the CREST job is saved to `<name>_crest.output` (where `<name>.xyz` was the original file submitted with `qcrest`). This file will contain the GFN-xTB energies. The full conformer ensemble (without rotamers) is in `crest_conformers.xyz` and at this stage can be visualised using e.g. Avogadro. If desired, the conformer-rotamer ensemble can be found in `crest_rotamers_6.xyz`.
+ - The defaults for qcrest are to request 4 cores, use methanol as solvent (GBSA), and to use an energy cutoff of 6 kcal/mol. These can be changed using command line arguments; use `qcrest -h` for more information.
+ - The output of the CREST job is saved to `<name>_crest.out` (where `<name>.xyz` was the original file submitted with `qcrest`). This file will contain the GFN-xTB energies. The full conformer ensemble (without rotamers) is in `crest_conformers.xyz` and at this stage can be visualised using e.g. Avogadro. If desired, the conformer-rotamer ensemble can be found in `crest_rotamers_6.xyz`.
 
 2. The CRE is then subjected to a single-point calculation with a relatively cheap level of theory (Grimme uses PBEh-3c, I used TPSS/def2-SVP/D3BJ/CPCM(Methanol)).
 
- - This can be easily done in ORCA by using `*xyzfile <charge> <mult> crest_conformers.allxyz`. The allxyz file format is detailed in the ORCA manual.
- - However, ORCA will not accept the `crest_conformers.xyz` file which CREST output in the previous step. In order to overcome this, the script `crestxyz_to_sp.py` will convert the .xyz file into multiple .allxyz files (with 50 conformers each) ready for use with ORCA. It will also generate ORCA input files which can then be submitted with `qorca *.inp -ca`.
- - The reason for splitting it into 50 conformers at a time is that ORCA sometimes throws tantrums with large .allxyz files... it is more reliable to do them in smaller batches.
+ - In theory, this can be done using the allxyz feature in ORCA. However, I dislike this for several reasons, and have opted to generate one input file per conformer. These reasons are given below in decreasing order of severity: 
+   - Sometimes the `.out` file gets truncated/corrupted for no apparent reason;
+   - With large allxyz files the program can crash due to (what appears to be memory issues);
+   - If there is a problem with just one structure then the entire job will be terminated;
+   - Running *n* conformers in one job can take longer than is necessary, compared to running one conformer per job in *n* jobs;
+   - Avoids having to use `-ca` with `qorca41`.
+ - By running `crestxyz_to_sp.py` on the `crest_conformers.xyz` file, one input file per conformer will be automatically generated. Right now the program is hard-coded to put in certain keywords; this can obviously be changed if needed.
 
 3. Conformers above a certain energy threshold are then rejected.
 
- - First, re-join the sp output files together!
- - The script `extract_energies.py` will help greatly with this step. By using the command line argument `-t X`, it will automatically output a csv file containing a list of conformers below X kcal/mol (relative to the lowest-energy conformer). Grimme uses X = 3, I use X = 4.
- - This csv file can then be read by `filter_allxyz.py` which extracts only the desired conformers from `crest_conformers.allxyz` and places them in a new allxyz file.
+ - The script `extract_energies.py` will help greatly with this step. It is capable of parsing any of the following:
+   - multiple single-point `.out` files (by running `extract_energies.py *.out`), such as those generated in the previous step;
+   - the CREST output file `<name>_crest.out`;
+   - ORCA output files from SP or Opt jobs on allxyz files.
+ - With the flag `-c` it prints a list of all conformers to a csv file.
+ - With the flag `-t X`, it will automatically output a csv file containing a list of conformers below X kcal/mol (relative to the lowest-energy conformer). Grimme uses X = 3, I use X = 4.
  - At this stage, to produce some graphics similar to those found in Grimme's SI, the script `line_plot_energies.py` is capable of reading in multiple csv files. It will then plot the energies of each conformer at different levels of theory (one csv file per level of theory). This is useful for checking whether CREST is indeed finding all or most of the low-energy conformers. However, I find that this is not a particularly useful way of presenting data.
  - Instead I have chosen to use a scatter plot to present the data. The file `scatter_energies.py` takes two csv files, one earlier and one after: for example, this can be the csv files (generated for all conformers) from the CREST job and the first SP job, for example. The question we really want to answer is: given that we will be using the energies from the "later" step to filter the CRE, *is the "earlier" step finding all the conformers which would pass this later filter*? By using the `-t` option, the script automatically colours the points which would *pass* the next filter in green. Then it becomes much clearer to see how well the "earlier" step is doing at finding these conformers which would pass the next filter.
 
