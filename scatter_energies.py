@@ -48,6 +48,7 @@ def get_energies(file):
     return conformer_energies
 
 if __name__ == '__main__':
+    print("Please make sure that the conformer numbers in both csv files line up properly.")
     args = get_args()
 
     earlier_energies = np.array(get_energies(args.earlier_csv))

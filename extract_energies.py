@@ -99,7 +99,7 @@ if __name__ == '__main__':
     else:
         for file in args.filenames:
             with open(file, 'r') as sp_output_file:
-                conformer_numbers.append(int(file.split(".")[-2].split("_")[-1]))
+                conformer_numbers.append(int(file.split(".")[-2].split("_")[-1])) # gets number from file name
                 for line in sp_output_file:
                     if "FINAL SINGLE POINT ENERGY" in line:
                         conformer_energies.append(float(line.split()[-1]))
