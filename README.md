@@ -1,4 +1,7 @@
 # qcnmr-tools
+
+**This README is not fully up-to-date!**
+
 Assorted scripts (Python 3) to aid with calculation of NMR properties.
 
 The NMR calculation workflow is adapted from [Grimme *et al.*, *Angew. Chem. Int. Ed.* **2017,** *56* (46), 14763–14769](https://doi.org/10.1002/anie.201708266). Below the key steps (as well as where the scripts come in) are described in more detail.
