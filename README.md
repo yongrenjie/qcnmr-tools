@@ -34,12 +34,12 @@ Please use a separate folder for each of the following steps! Not only is it muc
  - Run `crestxyz_to_opt.py crest_conformers.xyz sp_filtered_conformers.csv`. This generates one input file for each conformer that is in the csv file.
  - Once the calculations are done, `extract_energies.py *.out` can again be used to generate the csv file `opt_filtered_conformers.csv` which contains all conformers below X kcal/mol.
 
-**Step 4: Calculate the energy of all conformers at a higher level of theory and reject anything below a certain population** (default TPSS/def2-TZVPP/D3BJ/CPCM(Methanol))
+**Step 4: Calculate the energy of all conformers at a higher level of theory and select only the conformers which contribute a cumulative X% population** (default TPSS/def2-TZVPP/D3BJ/CPCM(Methanol))
  - Copy all the optimised xyz files, as well as `opt_filtered_conformers.csv`, to another directory!
  - In this directory, run `opt_to_sp.py opt_filtered_conformers.csv`. This generates input files for every conformer found in the csv file.
- - After the calculations are done, `extract_energies.py` will be again able to extract the energies. Using the flag `-b X`, the script will automatically calculate Boltzmann weights as well as populations. It then rejects anything below X% population, renormalises the populations of the remaining conformers, and produces `nmr_filtered_conformers.csv`. **This script assumes no degeneracy in the conformers! Be careful with systems possessing any kind of symmetry!**
+ - After the calculations are done, `extract_energies.py` will be again able to extract the energies. Using the flag `-p X`, the script will automatically calculate Boltzmann weights as well as populations. It then chooses the conformers which contribute a total of X% cumulative population, renormalises the populations of the remaining conformers, and produces `nmr_filtered_conformers.csv`. **This script assumes no degeneracy in the conformers! Be careful with systems possessing any kind of symmetry!**
 
-**Step 6: Calculate NMR parameters for all surviving conformers**
+**Step 5: Calculate NMR parameters for all surviving conformers**
 
  - scripts need to be edited
 
