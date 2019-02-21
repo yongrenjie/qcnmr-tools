@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import sys
@@ -13,7 +12,6 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("filenames", action='store', help='.out file(s) to analyse', nargs="*")
     parser.add_argument("-t", "--threshold", type=int, default=0, help="Finds conformers within X kcal/mol of the lowest energy conformer and prints them to a csv file.")
-    parser.add_argument("-g", "--graph", action='store_true', help='Creates a line graph with energies of all conformers.')
     parser.add_argument("-c", "--csv", action='store_true', help='Output all conformers to a csv file.')
     parser.add_argument("-p", "--population", type=int, default=0,
                         help="Calculates Boltzmann populations (assumes no degeneracy), selects the lowest-energy X% of conformers, prints numbers/populations to a csv file.")
@@ -143,12 +141,6 @@ if __name__ == '__main__':
     print("All conformers: ")
     print(all_conformers)
     print()
-
-    if args.graph:
-        all_conformers.plot(x='num', y='energy', kind='line')
-        plt.xlabel("Conformer number")
-        plt.ylabel("Energy (kcal/mol relative to lowest)")
-        plt.show()
 
     if args.threshold > 0:
         threshold_kcal = args.threshold
