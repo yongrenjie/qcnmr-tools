@@ -2,17 +2,21 @@
 
 import argparse
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import sys
 
-HARTREE_TO_KCAL = 627.509
+HARTREE_TO_KCAL = 627.509474
+KT_298_K = 0.592186673
 
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("filenames", action='store', help='.out file(s) to analyse', nargs="*")
-    parser.add_argument("-t", "--threshold", type=int, default=0, help="Finds conformers within THRESHOLD kcal/mol of the lowest energy conformer and prints them to a csv file.")
+    parser.add_argument("-t", "--threshold", type=int, default=0, help="Finds conformers within X kcal/mol of the lowest energy conformer and prints them to a csv file.")
     parser.add_argument("-p", "--plot", action='store_true', help='Plot energies of all conformers.')
     parser.add_argument("-c", "--csv", action='store_true', help='Output all conformers to a csv file.')
+    parser.add_argument("-b", "--boltzmann", type=int, default=0,
+                        help="Calculates Boltzmann populations (assumes no degeneracy), rejects anything below X%, and prints conformer numbers/populations to a csv file.")
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -136,8 +140,9 @@ if __name__ == '__main__':
             all_conformers['energy'] = (all_conformers['energy'] - all_conformers['energy'].min()) * HARTREE_TO_KCAL
             all_conformers = all_conformers.sort_values('num')
             all_conformers = all_conformers.reset_index(drop=True)
-
+    print("All conformers: ")
     print(all_conformers)
+    print()
 
     if args.plot:
         all_conformers.plot(x='num', y='energy', kind='line')
@@ -147,9 +152,10 @@ if __name__ == '__main__':
 
     if args.threshold > 0:
         threshold_kcal = args.threshold
-        filtered_conformers = all_conformers[all_conformers['energy'] <= threshold_kcal]
+        filtered_conformers = all_conformers[all_conformers['energy'] <= threshold_kcal].copy()
         filtered_conformers = filtered_conformers.sort_values('num')
         filtered_conformers = filtered_conformers.reset_index(drop=True)
+        print("Conformers below {} kcal/mol:".format(threshold_kcal))
         print(filtered_conformers)
 
         if output_file_type in ["orca_sp", "multiple_orca_sp"]:
@@ -158,8 +164,8 @@ if __name__ == '__main__':
             csv_filename = "opt_filtered_conformers.csv"
         else:
             csv_filename = "filtered_conformers.csv"
-        filtered_conformers.to_csv(csv_filename, columns=['num', 'energy'])
-        print("Conformers within {} kcal/mol written to {}.".format(threshold_kcal, csv_filename))
+        filtered_conformers.to_csv(csv_filename)
+        print("Filtered conformers written to {}.".format(csv_filename))
 
     if args.csv:
         if output_file_type in ["orca_sp", "multiple_orca_sp"]:
@@ -168,5 +174,21 @@ if __name__ == '__main__':
             csv_filename = "opt_all_conformers.csv"
         else:
             csv_filename = "all_conformers.csv"
-        all_conformers.to_csv(csv_filename, columns=['num', 'energy'])
+        all_conformers.to_csv(csv_filename)
         print("All conformers written to {}.".format(csv_filename))
+
+    if args.boltzmann > 0:
+        all_conformers['boltzmann'] = np.exp(-all_conformers['energy']/KT_298_K)
+        partition_function = all_conformers['boltzmann'].sum()
+        all_conformers['population'] = all_conformers['boltzmann']/partition_function
+        threshold_population = args.boltzmann / 100
+        pop_filtered_conformers = all_conformers[all_conformers['population'] >= threshold_population].copy()
+        # .copy() is not strictly required, but it overcomes the SettingWithCopyWarning in pandas...
+        pop_filtered_conformers['renorm_pop'] = pop_filtered_conformers['population']/pop_filtered_conformers['population'].sum()
+        print("Conformers above {}% population:".format(args.boltzmann))
+        print(pop_filtered_conformers)
+
+        csv_filename = "nmr_filtered_conformers.csv"
+        column_names = list(pop_filtered_conformers.columns)
+        pop_filtered_conformers.to_csv(csv_filename)
+        print("Filtered conformers written to {}.".format(csv_filename))
