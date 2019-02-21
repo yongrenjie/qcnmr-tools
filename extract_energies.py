@@ -152,11 +152,21 @@ if __name__ == '__main__':
         filtered_conformers = filtered_conformers.reset_index(drop=True)
         print(filtered_conformers)
 
-        csv_filename = "filtered_conformers.csv"
+        if output_file_type in ["orca_sp", "multiple_orca_sp"]:
+            csv_filename = "sp_filtered_conformers.csv"
+        elif output_file_type in ["orca_opt", "multiple_orca_opt"]:
+            csv_filename = "opt_filtered_conformers.csv"
+        else:
+            csv_filename = "filtered_conformers.csv"
         filtered_conformers.to_csv(csv_filename, columns=['num', 'energy'])
         print("Conformers within {} kcal/mol written to {}.".format(threshold_kcal, csv_filename))
 
     if args.csv:
-        csv_filename = "all_conformers.csv"
+        if output_file_type in ["orca_sp", "multiple_orca_sp"]:
+            csv_filename = "sp_all_conformers.csv"
+        elif output_file_type in ["orca_opt", "multiple_orca_opt"]:
+            csv_filename = "opt_all_conformers.csv"
+        else:
+            csv_filename = "all_conformers.csv"
         all_conformers.to_csv(csv_filename, columns=['num', 'energy'])
         print("All conformers written to {}.".format(csv_filename))
