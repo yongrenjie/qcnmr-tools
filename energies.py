@@ -176,17 +176,19 @@ if __name__ == '__main__':
 
         all_conformers = all_conformers.sort_values('population', ascending=False)
         all_conformers = all_conformers.reset_index(drop=True)
-        all_conformers["cumulative_pop"] = 0
+        all_conformers["cumul_pop"] = 0
         threshold_reached = False
         for i in range(len(all_conformers.index)):
             cumulative_population = all_conformers.loc[0:i, "population"].sum()
             if threshold_reached:
-                all_conformers.loc[i, "cumulative_pop"] = 10
-            else:
-                all_conformers.loc[i, "cumulative_pop"] = cumulative_population
+                all_conformers.loc[i, "cumul_pop"] = 10
+       git git     else:
+                all_conformers.loc[i, "cumul_pop"] = cumulative_population
                 if cumulative_population > args.population/100:
                     threshold_reached = True
-        filtered_conformers = all_conformers[all_conformers['cumulative_pop'] < 10]
+        filtered_conformers = all_conformers[all_conformers["cumul_pop"] < 10].copy()
+        # .copy() not strictly needed, but overcomes the pandas SettingWithCopyWarning
+        filtered_conformers["renorm_pop"] = filtered_conformers["population"]/filtered_conformers["population"].sum()
         print(filtered_conformers)
         csv_filename = "nmr_filtered_conformers.csv"
         filtered_conformers.to_csv(csv_filename)
