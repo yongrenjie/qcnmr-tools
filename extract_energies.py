@@ -13,10 +13,10 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("filenames", action='store', help='.out file(s) to analyse', nargs="*")
     parser.add_argument("-t", "--threshold", type=int, default=0, help="Finds conformers within X kcal/mol of the lowest energy conformer and prints them to a csv file.")
-    parser.add_argument("-p", "--plot", action='store_true', help='Plot energies of all conformers.')
+    parser.add_argument("-g", "--graph", action='store_true', help='Creates a line graph with energies of all conformers.')
     parser.add_argument("-c", "--csv", action='store_true', help='Output all conformers to a csv file.')
-    parser.add_argument("-b", "--boltzmann", type=int, default=0,
-                        help="Calculates Boltzmann populations (assumes no degeneracy), rejects anything below X%, and prints conformer numbers/populations to a csv file.")
+    parser.add_argument("-p", "--population", type=int, default=0,
+                        help="Calculates Boltzmann populations (assumes no degeneracy), selects the lowest-energy X% of conformers, prints numbers/populations to a csv file.")
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -144,7 +144,7 @@ if __name__ == '__main__':
     print(all_conformers)
     print()
 
-    if args.plot:
+    if args.graph:
         all_conformers.plot(x='num', y='energy', kind='line')
         plt.xlabel("Conformer number")
         plt.ylabel("Energy (kcal/mol relative to lowest)")
@@ -177,18 +177,25 @@ if __name__ == '__main__':
         all_conformers.to_csv(csv_filename)
         print("All conformers written to {}.".format(csv_filename))
 
-    if args.boltzmann > 0:
+    if args.population > 0:
         all_conformers['boltzmann'] = np.exp(-all_conformers['energy']/KT_298_K)
         partition_function = all_conformers['boltzmann'].sum()
         all_conformers['population'] = all_conformers['boltzmann']/partition_function
-        threshold_population = args.boltzmann / 100
-        pop_filtered_conformers = all_conformers[all_conformers['population'] >= threshold_population].copy()
-        # .copy() is not strictly required, but it overcomes the SettingWithCopyWarning in pandas...
-        pop_filtered_conformers['renorm_pop'] = pop_filtered_conformers['population']/pop_filtered_conformers['population'].sum()
-        print("Conformers above {}% population:".format(args.boltzmann))
-        print(pop_filtered_conformers)
 
+        all_conformers = all_conformers.sort_values('population', ascending=False)
+        all_conformers = all_conformers.reset_index(drop=True)
+        all_conformers["cumulative_pop"] = 0
+        threshold_reached = False
+        for i in range(len(all_conformers.index)):
+            cumulative_population = all_conformers.loc[0:i, "population"].sum()
+            if threshold_reached:
+                all_conformers.loc[i, "cumulative_pop"] = 10
+            else:
+                all_conformers.loc[i, "cumulative_pop"] = cumulative_population
+                if cumulative_population > args.population/100:
+                    threshold_reached = True
+        filtered_conformers = all_conformers[all_conformers['cumulative_pop'] < 10]
+        print(filtered_conformers)
         csv_filename = "nmr_filtered_conformers.csv"
-        column_names = list(pop_filtered_conformers.columns)
-        pop_filtered_conformers.to_csv(csv_filename)
+        filtered_conformers.to_csv(csv_filename)
         print("Filtered conformers written to {}.".format(csv_filename))
