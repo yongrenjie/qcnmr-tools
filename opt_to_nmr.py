@@ -37,17 +37,14 @@ if __name__ == '__main__':
                         "    Nuclei = all H { ssfc, ist = 1 }\n" \
                         "    SpinSpinRThresh 6.0\n" \
                         "end"
-    hydrogen_atoms = ""
+    eprnmr_coupling_ch = "%eprnmr\n" \
+                         "    Ori = GIAO\n"
     if args.nuclei:
         for i in args.nuclei:
-            hydrogen_atoms = hydrogen_atoms + str(i) + " "
+            eprnmr_coupling_ch = eprnmr_coupling_ch +  "    Nuclei = " + str(i) + " { ssall, ist = 1 }\n"
     else:
-        hydrogen_atoms = "all H "
-    eprnmr_coupling_ch = "%eprnmr\n" \
-                         "    Ori = GIAO\n" \
-                         "    Nuclei = " + hydrogen_atoms + "{ ssall, ist = 1 }\n" \
-                         "    SpinSpinRThresh 1.3\n" \
-                         "end"
+        eprnmr_coupling_ch = eprnmr_coupling_ch + "    Nuclei = all H { ssall, ist = 1 }\n"
+    eprnmr_coupling_ch = eprnmr_coupling_ch + "    SpinSpinRThresh 1.3\nend"
 
     # reads in allowed conformers, energies, and (renormalised) populations from the csv file
     allowed_conformers = []
@@ -68,7 +65,7 @@ if __name__ == '__main__':
     for file in ls:
         if file.endswith(".xyz") and not file.startswith("."):
             # second conditional is necessary, otherwise it tries to read all the hidden files
-            conformer_number = int(file.split(".")[-2].split("_")[-1])  # gets conformer number from file name
+            conformer_number = int(file.split(".")[-2].split("_")[1])  # gets conformer number from file name
             if conformer_number in allowed_conformers:
                 allowed_xyz_files.append(file)
 
@@ -78,7 +75,7 @@ if __name__ == '__main__':
     except:
         pass
     for file in allowed_xyz_files:
-        conformer_number = int(file.split(".")[-2].split("_")[-1])  # gets conformer number from file name
+        conformer_number = int(file.split(".")[-2].split("_")[1])  # gets conformer number from file name
         inp_name = "s5-shielding/s5_{}_nmr_shielding.inp".format(conformer_number) # Change if desired
 
         with open(file, 'r') as xyz_file:
@@ -106,7 +103,7 @@ if __name__ == '__main__':
     except:
         pass
     for file in allowed_xyz_files:
-        conformer_number = int(file.split(".")[-2].split("_")[-1])  # gets conformer number from file name
+        conformer_number = int(file.split(".")[-2].split("_")[1])  # gets conformer number from file name
         inp_name = "s6a-HHcoupling/s6a_{}_nmr_HHcoupling.inp".format(conformer_number)  # Change if desired
 
         with open(file, 'r') as xyz_file:
@@ -135,7 +132,7 @@ if __name__ == '__main__':
     except:
         pass
     for file in allowed_xyz_files:
-        conformer_number = int(file.split(".")[-2].split("_")[-1])  # gets conformer number from file name
+        conformer_number = int(file.split(".")[-2].split("_")[1])  # gets conformer number from file name
         inp_name = "s6b-CHcoupling/s6b_{}_nmr_CHcoupling.inp".format(conformer_number)  # Change if desired
 
         with open(file, 'r') as xyz_file:
