@@ -9,12 +9,13 @@ numbers of atoms, atom labels, etc. This was useful e.g. when finding the linear
 When calling -a, the script automatically reads in the renormalised population of each conformer. This information
 is placed into the nmr input files automatically by opt_to_nmr.py as a comment. The ORCA .out file therefore also
 contains the information, since the input file is automatically printed near the top of the .out file.
-Then, it automatically averages the shifts and scales them according to the slope/intercept previously found.
+Then, it automatically averages the couplings.
 '''
 
 
 import argparse
 import pandas as pd
+import numpy as np
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -65,13 +66,14 @@ if __name__ == '__main__':
                         'atom_type': atom_types,
                         'conf_{}'.format(conformer_number): couplings
                     })
+                    nmr_df = nmr_df.set_index('atom_label')
                     pop = pd.Series(population, index=['conf_{}'.format(conformer_number)])
             else:
                 atom_labels, atom_types, couplings, population = parse_coupling_file(file)
                 if atom_labels:
-                    nmr_df['conf_{}'.format(conformer_number)] = couplings
-                    # TODO: This will throw an error if the nuclei do not match up!
-                    # For different geometries, the pairs of nuclei within X Angstrom will differ
+                    nmr_df['conf_{}'.format(conformer_number)] = np.nan
+                    for i in range(len(atom_labels)):
+                        nmr_df.at[atom_labels[i], 'conf_{}'.format(conformer_number)] = couplings[i]
                     pop['conf_{}'.format(conformer_number)] = population
         pop.name = "pop"
         full_df = nmr_df.append(pop)
