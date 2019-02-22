@@ -35,7 +35,7 @@ if __name__ == '__main__':
     eprnmr_coupling_hh =  "%eprnmr\n" \
                         "    Ori = GIAO\n" \
                         "    Nuclei = all H { ssfc, ist = 1 }\n" \
-                        "    SpinSpinRThresh 6.0\n" \
+                        "    SpinSpinRThresh 3.5\n" \
                         "end"
     eprnmr_coupling_ch = "%eprnmr\n" \
                          "    Ori = GIAO\n"
