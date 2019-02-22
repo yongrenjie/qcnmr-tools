@@ -73,7 +73,10 @@ if __name__ == '__main__':
                 allowed_xyz_files.append(file)
 
     # generate shielding input files
-    os.mkdir("s5-shielding")
+    try:
+        os.mkdir("s5-shielding")
+    except:
+        pass
     for file in allowed_xyz_files:
         conformer_number = int(file.split(".")[-2].split("_")[-1])  # gets conformer number from file name
         inp_name = "s5-shielding/s5_{}_nmr_shielding.inp".format(conformer_number) # Change if desired
@@ -98,7 +101,10 @@ if __name__ == '__main__':
                 print(eprnmr_shielding, file=inp_file)
 
     # generate HH coupling input files
-    os.mkdir("s6a-HHcoupling")
+    try:
+        os.mkdir("s6a-HHcoupling")
+    except:
+        pass
     for file in allowed_xyz_files:
         conformer_number = int(file.split(".")[-2].split("_")[-1])  # gets conformer number from file name
         inp_name = "s6a-HHcoupling/s6a_{}_nmr_HHcoupling.inp".format(conformer_number)  # Change if desired
@@ -124,7 +130,10 @@ if __name__ == '__main__':
                 print(eprnmr_coupling_hh, file=inp_file)
 
     # generate CH coupling input files
-    os.mkdir("s6b-CHcoupling")
+    try:
+        os.mkdir("s6b-CHcoupling")
+    except:
+        pass
     for file in allowed_xyz_files:
         conformer_number = int(file.split(".")[-2].split("_")[-1])  # gets conformer number from file name
         inp_name = "s6b-CHcoupling/s6b_{}_nmr_CHcoupling.inp".format(conformer_number)  # Change if desired
