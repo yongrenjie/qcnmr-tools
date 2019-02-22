@@ -70,6 +70,8 @@ if __name__ == '__main__':
                 atom_labels, atom_types, couplings, population = parse_coupling_file(file)
                 if atom_labels:
                     nmr_df['conf_{}'.format(conformer_number)] = couplings
+                    # TODO: This will throw an error if the nuclei do not match up!
+                    # For different geometries, the pairs of nuclei within X Angstrom will differ
                     pop['conf_{}'.format(conformer_number)] = population
         pop.name = "pop"
         full_df = nmr_df.append(pop)
