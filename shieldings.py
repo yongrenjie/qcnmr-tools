@@ -16,6 +16,7 @@ Then, it automatically averages the shifts and scales them according to the slop
 import argparse
 import re
 import pandas as pd
+import numpy as np
 
 SLOPE_1H_PBE0_ccPVTZ = -1.072135032
 INTERCEPT_1H_PBE0_ccPVTZ = 31.29178358
@@ -52,7 +53,7 @@ def parse_shielding_file(file):
             if re.match(r'\s+\d+\s+[C|H]\s+', line) and shielding_block:
                 atom_labels.append(line.split()[0])
                 atom_types.append(line.split()[1])
-                shieldings.append(line.split()[2])
+                shieldings.append(float(line.split()[2]))
     return atom_labels, atom_types, shieldings, population
 
 
@@ -68,8 +69,8 @@ if __name__ == '__main__':
                 atom_labels, atom_types, shieldings, population = parse_shielding_file(file)
                 if atom_labels:
                     nmr_df = pd.DataFrame({
-                        'atom_labels': atom_labels,
-                        'atom_types': atom_types,
+                        'atom_label': atom_labels,
+                        'atom_type': atom_types,
                         'conf_{}'.format(conformer_number): shieldings
                     })
                     pop = pd.Series(population, index=['conf_{}'.format(conformer_number)])
@@ -81,9 +82,29 @@ if __name__ == '__main__':
         pop.name = "pop"
         full_df = nmr_df.append(pop)
 
-        # TODO average the populations; all the data is inside the df...
+        # average the shieldings according to population
+        full_df['avg_shield'] = 0.0
+        total_pop = 0
+        for name in full_df.columns:
+            if name.startswith("conf"):
+                full_df['avg_shield'] = full_df['avg_shield'] + full_df[name]*full_df.at['pop',name]
+                total_pop = total_pop + full_df.at['pop',name]
+        full_df.at['pop', 'avg_shield'] = total_pop
 
+        # scale the shieldings to obtain chemical shifts
+        full_df['shift'] = 0.0
+        for i in full_df.index:
+            if isinstance(i, int):
+                if full_df.at[i, 'atom_type'] == "C":
+                    full_df.at[i, 'shift'] = (full_df.at[i, 'avg_shield'] - INTERCEPT_13C_PBE0_ccPVTZ)/SLOPE_13C_PBE0_ccPVTZ
+                elif full_df.at[i, 'atom_type'] == "H":
+                    full_df.at[i, 'shift'] = (full_df.at[i, 'avg_shield'] - INTERCEPT_1H_PBE0_ccPVTZ)/SLOPE_1H_PBE0_ccPVTZ
+        full_df.at['pop','shift'] = np.nan
         print(full_df)
+
+        csv_filename = "chemical_shift_data.csv"
+        full_df.to_csv(csv_filename)
+        print("Data written to {}.".format(csv_filename))
 
     else:
         for file in args.filenames:
@@ -91,13 +112,13 @@ if __name__ == '__main__':
             if atom_labels:
                 print("FILE: {}".format(file))
                 nmr_df = pd.DataFrame({
-                    'atom_labels': atom_labels,
-                    'atom_types': atom_types,
-                    'shieldings': shieldings
+                    'atom_label': atom_labels,
+                    'atom_type': atom_types,
+                    'shielding': shieldings
                 })
                 print(nmr_df)
                 print()
                 if args.csv:
                     csv_filename = file.replace(".out", ".csv")
-                    nmr_df.to_csv(csv_filename, columns=['atom_labels', 'atom_types', 'shieldings'])
+                    nmr_df.to_csv(csv_filename)
                     print("Data written to {}.".format(csv_filename))
