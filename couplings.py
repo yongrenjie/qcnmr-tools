@@ -14,15 +14,8 @@ Then, it automatically averages the shifts and scales them according to the slop
 
 
 import argparse
-import re
 import pandas as pd
 import numpy as np
-
-SLOPE_1H_PBE0_ccPVTZ = -1.072135032
-INTERCEPT_1H_PBE0_ccPVTZ = 31.29178358
-SLOPE_13C_PBE0_ccPVTZ = -1.044992801
-INTERCEPT_13C_PBE0_ccPVTZ = 186.6631559
-# chemical shift = (shielding - intercept)/slope
 
 
 def get_args():
@@ -36,30 +29,32 @@ def get_args():
     return parser.parse_args()
 
 
-def parse_shielding_file(file):
+def parse_coupling_file(file):
     with open(file, 'r') as data_file:
-        shielding_block = False
-        atom_labels = []
-        atom_types = []
-        shieldings = []
+        atom_1_labels = []
+        atom_2_labels = []
+        atom_1_types = []
+        atom_2_types = []
+        couplings = []
         population = 0
         for line in data_file:
             if "#  Population:" in line:
                 population = float(line.split()[-1])
-            if "CHEMICAL SHIELDING SUMMARY" in line:
-                shielding_block = True
-            elif "Timings for individual modules" in line:
-                shielding_block = False
-            if re.match(r'\s+\d+\s+[C|H]\s+', line) and shielding_block:
-                atom_labels.append(line.split()[0])
-                atom_types.append(line.split()[1])
-                shieldings.append(float(line.split()[2]))
-    return atom_labels, atom_types, shieldings, population
+            if "NUCLEUS A" in line and "NUCLEUS B" in line:
+                print(line)
+                atom_1_labels.append(line.split()[4])
+                atom_1_types.append(line.split()[3])
+                atom_2_labels.append(line.split()[-1])
+                atom_2_types.append(line.split()[-2])
+            if "Total" in line and "iso=" in line:
+                couplings.append(float(line.split()[-1]))
+
+    return atom_1_labels, atom_1_types, atom_2_labels, atom_2_types, couplings, population
 
 
 if __name__ == '__main__':
     args = get_args()
-
+    '''
     if args.analyse:
         file_number = 0
         for file in args.filenames:
@@ -105,16 +100,20 @@ if __name__ == '__main__':
         csv_filename = "chemical_shift_data.csv"
         full_df.to_csv(csv_filename)
         print("Data written to {}.".format(csv_filename))
-
-    else:
+    '''
+    if 1:
+    # else:
         for file in args.filenames:
-            atom_labels, atom_types, shieldings, population = parse_shielding_file(file)
-            if atom_labels:
+            atom_1_labels, atom_1_types, atom_2_labels, atom_2_types, couplings, population = parse_coupling_file(file)
+            if atom_1_labels:
                 print("FILE: {}".format(file))
+                print("pop: {}".format(population))
                 nmr_df = pd.DataFrame({
-                    'atom_label': atom_labels,
-                    'atom_type': atom_types,
-                    'shielding': shieldings
+                    'atom_1_label': atom_1_labels,
+                    'atom_1_type': atom_1_types,
+                    'atom_2_label': atom_2_labels,
+                    'atom_2_type': atom_2_types,
+                    'coupling': couplings,
                 })
                 print(nmr_df)
                 print()
