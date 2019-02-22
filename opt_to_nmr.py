@@ -4,8 +4,8 @@
 # (or something similar). Then run:
 #    opt_to_nmr.py nmr_filtered_conformers.csv
 # where nmr_filtered_conformers.csv is the csv file containing conformers for NMR calculations.
-# The script then generates all required input files for the shielding calculations, which can then be copied to a
-# directory of your choice.
+# The script then generates all required input files for the shielding and coupling calculations in
+# separate directories.
 
 # Note that this script uses the file name to determine which conformers are in which .xyz file. For it to work, the
 # filenames have to be of the form s3_<confno>_<other_keywords>.xyz, i.e. the number must be the second thing given.
@@ -17,7 +17,9 @@ import argparse
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("csvname", action='store', help='csv file to filter conformers by.')
-    parser.add_argument("-n", "--nuclei", type=int, nargs="*", help="Labels of H nuclei to calculate J(CH) for.")
+    parser.add_argument("-n", "--nuclei", type=int, nargs="*", help="Labels of H nuclei to calculate J(CH) for."
+                                                                    "WARNING: USE ATOM LABELS STARTING FROM 1, i.e."
+                                                                    "exactly what is shown in Avogadro")
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -70,9 +72,11 @@ if __name__ == '__main__':
             if conformer_number in allowed_conformers:
                 allowed_xyz_files.append(file)
 
+    # generate shielding input files
+    os.mkdir("s5-shielding")
     for file in allowed_xyz_files:
         conformer_number = int(file.split(".")[-2].split("_")[-1])  # gets conformer number from file name
-        inp_name = "s6_{}_nmr_shielding.inp".format(conformer_number) # Change if desired
+        inp_name = "s5-shielding/s5_{}_nmr_shielding.inp".format(conformer_number) # Change if desired
 
         with open(file, 'r') as xyz_file:
             line_count = 1
@@ -92,3 +96,55 @@ if __name__ == '__main__':
                 print("*", file=inp_file)
                 print("", file=inp_file)
                 print(eprnmr_shielding, file=inp_file)
+
+    # generate HH coupling input files
+    os.mkdir("s6a-HHcoupling")
+    for file in allowed_xyz_files:
+        conformer_number = int(file.split(".")[-2].split("_")[-1])  # gets conformer number from file name
+        inp_name = "s6a-HHcoupling/s6a_{}_nmr_HHcoupling.inp".format(conformer_number)  # Change if desired
+
+        with open(file, 'r') as xyz_file:
+            line_count = 1
+            with open(inp_name, 'w') as inp_file:
+                print(keywords, file=inp_file)
+                print("", file=inp_file)
+                print("#  S4-SP: {}".format(allowed_conformer_energies[allowed_conformers.index(conformer_number)]),
+                      file=inp_file)  # prints def2-TZVPP energy as a comment
+                print("#  Population: {}".format(
+                    allowed_conformer_populations[allowed_conformers.index(conformer_number)]),
+                      file=inp_file)
+                print("", file=inp_file)
+                print("*xyz 0 1", file=inp_file)
+                for line in xyz_file:
+                    if line_count >= 3:
+                        print(line.rstrip("\n"), file=inp_file)
+                    line_count = line_count + 1
+                print("*", file=inp_file)
+                print("", file=inp_file)
+                print(eprnmr_coupling_hh, file=inp_file)
+
+    # generate CH coupling input files
+    os.mkdir("s6b-CHcoupling")
+    for file in allowed_xyz_files:
+        conformer_number = int(file.split(".")[-2].split("_")[-1])  # gets conformer number from file name
+        inp_name = "s6b-CHcoupling/s6b_{}_nmr_CHcoupling.inp".format(conformer_number)  # Change if desired
+
+        with open(file, 'r') as xyz_file:
+            line_count = 1
+            with open(inp_name, 'w') as inp_file:
+                print(keywords, file=inp_file)
+                print("", file=inp_file)
+                print("#  S4-SP: {}".format(allowed_conformer_energies[allowed_conformers.index(conformer_number)]),
+                      file=inp_file)  # prints def2-TZVPP energy as a comment
+                print("#  Population: {}".format(
+                    allowed_conformer_populations[allowed_conformers.index(conformer_number)]),
+                      file=inp_file)
+                print("", file=inp_file)
+                print("*xyz 0 1", file=inp_file)
+                for line in xyz_file:
+                    if line_count >= 3:
+                        print(line.rstrip("\n"), file=inp_file)
+                    line_count = line_count + 1
+                print("*", file=inp_file)
+                print("", file=inp_file)
+                print(eprnmr_coupling_ch, file=inp_file)
