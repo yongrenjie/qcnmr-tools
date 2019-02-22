@@ -45,9 +45,13 @@ if __name__ == '__main__':
             if conformer_number in allowed_conformers:
                 allowed_xyz_files.append(file)
 
+    try:
+        os.mkdir("s4-sp")
+    except:
+        pass
     for file in allowed_xyz_files:
         conformer_number = int(file.split(".")[-2].split("_")[1])  # gets conformer number from file name
-        inp_name = "s4_{}_sp_tzvpp".format(conformer_number) # Change if desired
+        inp_name = "s4-sp/s4_{}_sp_tzvpp".format(conformer_number) # Change if desired
 
         with open(file, 'r') as xyz_file:
             line_count = 1
