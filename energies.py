@@ -115,7 +115,7 @@ if __name__ == '__main__':
         if output_file_type == "multiple_orca_opt":
             for file in args.filenames:
                 with open(file, 'r') as opt_output_file:
-                    conformer_numbers.append(int(file.split(".")[-2].split("_")[-1]))  # gets number from file name
+                    conformer_numbers.append(int(file.split(".")[-2].split("_")[1]))  # gets number from file name
                     converged = False
                     for line in opt_output_file:
                         if "FINAL ENERGY EVALUATION AT THE STATIONARY POINT" in line:
@@ -130,7 +130,7 @@ if __name__ == '__main__':
         elif output_file_type == "multiple_orca_sp":
             for file in args.filenames:
                 with open(file, 'r') as sp_output_file:
-                    conformer_numbers.append(int(file.split(".")[-2].split("_")[-1])) # gets number from file name
+                    conformer_numbers.append(int(file.split(".")[-2].split("_")[1])) # gets number from file name
                     for line in sp_output_file:
                         if "FINAL SINGLE POINT ENERGY" in line:
                             conformer_energies.append(float(line.split()[-1]))
@@ -182,7 +182,7 @@ if __name__ == '__main__':
             cumulative_population = all_conformers.loc[0:i, "population"].sum()
             if threshold_reached:
                 all_conformers.loc[i, "cumul_pop"] = 10
-       git git     else:
+            else:
                 all_conformers.loc[i, "cumul_pop"] = cumulative_population
                 if cumulative_population > args.population/100:
                     threshold_reached = True

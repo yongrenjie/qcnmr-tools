@@ -8,7 +8,7 @@
 # then be copied to a directory of your choice.
 
 # Note that this script uses the file name to determine which conformers are in which .xyz file. For it to work, the
-# filenames have to be of the form <...>_<confno>.xyz, i.e. there must be an underscore before the number.
+# filenames have to be of the form s3_<confno>_<other_keywords>.xyz, i.e. the number must be the second thing given.
 # The previous scripts should automatically do this.
 
 import os
@@ -41,13 +41,13 @@ if __name__ == '__main__':
     allowed_xyz_files = []
     for file in ls:
         if file.endswith(".xyz"):
-            conformer_number = int(file.split(".")[-2].split("_")[-1])  # gets conformer number from file name
+            conformer_number = int(file.split(".")[-2].split("_")[1])  # gets conformer number from file name
             if conformer_number in allowed_conformers:
                 allowed_xyz_files.append(file)
 
     for file in allowed_xyz_files:
-        conformer_number = int(file.split(".")[-2].split("_")[-1])  # gets conformer number from file name
-        inp_name = file.replace(".xyz", ".inp").replace("svp", "tzvpp").replace("opt", "sp") # Change if desired
+        conformer_number = int(file.split(".")[-2].split("_")[1])  # gets conformer number from file name
+        inp_name = "s4_{}_sp_tzvpp".format(conformer_number) # Change if desired
 
         with open(file, 'r') as xyz_file:
             line_count = 1

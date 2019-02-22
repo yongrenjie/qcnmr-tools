@@ -17,7 +17,7 @@ if __name__ == '__main__':
     with open(crest_file, 'r') as crest_xyz_file:
         line_number = 0
         conformer_number = 1
-        output_file = open('tpss_svp_sp_{}.inp'.format(conformer_number), 'w')
+        output_file = open('s2_{}_sp.inp'.format(conformer_number), 'w')
         for line in crest_xyz_file:
             line_number = line_number + 1
             number_of_atoms_found = re.match(r'\s+(\d+)\s+', line)
@@ -29,7 +29,7 @@ if __name__ == '__main__':
                     if conformer_number % 100 == 0:
                         print(conformer_number)
                     conformer_number = conformer_number + 1
-                    output_file = open('tpss_svp_sp_{}.inp'.format(conformer_number), 'w')
+                    output_file = open('s2_{}_sp_svp.inp'.format(conformer_number), 'w')
                 print(keywords, file=output_file)
                 print("", file=output_file)
             elif energy_found:

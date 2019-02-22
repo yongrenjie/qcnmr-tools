@@ -50,8 +50,7 @@ if __name__ == '__main__':
                          "end"
 
     for file in args.filenames:
-        base_name = file.rstrip(".xyz")
-        base_inp_name = file.replace(".xyz", ".inp")
+        conformer_number = int(file.split(".")[-2].split("_")[1])  # gets conformer number from file name
         if args.shielding:
             inp_name = base_inp_name.replace("opt", "nmr_s")
         elif args.hhcoupling:

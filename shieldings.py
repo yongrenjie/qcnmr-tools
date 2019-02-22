@@ -8,7 +8,7 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("filenames",
                         action='store',
-                        help='.xyz files to convert into input files.',
+                        help='.out files to read.',
                         nargs="*")
     parser.add_argument("-c", "--csv", action="store_true", help="Output a csv file for every nmr output file found")
     return parser.parse_args()

@@ -39,11 +39,11 @@ if __name__ == '__main__':
             if number_of_atoms_found:
                 conformer_number = conformer_number + 1
                 if conformer_number == allowed_conformers[0]:
-                    output_file = open("tpss_svp_opt_{}.inp".format(conformer_number), 'w')
+                    output_file = open("s3_{}_opt_svp.inp".format(conformer_number), 'w')
                 elif conformer_number in allowed_conformers:
                     print("*", file=output_file)
                     output_file.close()
-                    output_file = open("tpss_svp_opt_{}.inp".format(conformer_number), 'w')
+                    output_file = open("s3_{}_opt_svp.inp".format(conformer_number), 'w')
 
             if conformer_number in allowed_conformers:
                 if number_of_atoms_found:
