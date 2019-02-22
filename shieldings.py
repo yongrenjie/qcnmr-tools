@@ -100,6 +100,9 @@ if __name__ == '__main__':
                 elif full_df.at[i, 'atom_type'] == "H":
                     full_df.at[i, 'shift'] = (full_df.at[i, 'avg_shield'] - INTERCEPT_1H_PBE0_ccPVTZ)/SLOPE_1H_PBE0_ccPVTZ
         full_df.at['pop','shift'] = np.nan
+
+        # round final chemical shift to 2 decimal places
+        full_df['shift'] = full_df['shift'].round(2)
         print(full_df)
 
         csv_filename = "chemical_shift_data.csv"

@@ -83,6 +83,9 @@ if __name__ == '__main__':
                 total_pop = total_pop + full_df.at['pop',name]
         full_df.at['pop', 'avg_coupl'] = total_pop
 
+        # round the final value to 2 decimal places
+        full_df['avg_coupl'] = full_df['avg_coupl'].round(2)
+
         print(full_df)
 
         csv_filename = "coupling_constant_data.csv"
