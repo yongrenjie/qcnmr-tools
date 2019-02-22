@@ -1,7 +1,5 @@
 # qcnmr-tools
 
-**This README is not fully up-to-date!**
-
 Assorted scripts (Python 3) to aid with calculation of NMR properties.
 
 The NMR calculation workflow is adapted from [Grimme *et al.*, *Angew. Chem. Int. Ed.* **2017,** *56* (46), 14763–14769](https://doi.org/10.1002/anie.201708266). Below the key steps (as well as where the scripts come in) are described in more detail. Each individual script has more explanation.
@@ -41,7 +39,13 @@ Please use a separate folder for each of the following steps! Not only is it muc
 
 **Step 5: Calculate NMR parameters for all surviving conformers**
 
- - scripts need to be edited
+ - To generate the input files for the NMR calculations, copy `nmr_filtered_conformers.csv` to the folder containing the optimised `.xyz` files.
+ - Run `opt_to_nmr.py nmr_filtered_conformers.csv -n <NUCLEI>`. Multiple atom labels may be specified after `-n`; it serves to specify which hydrogen atoms the one-bond C–H coupling constants will be calculated for. **NOTE: Because of some quirks of ORCA input, the atom labels given here should be counted from 1, as opposed to the usual 0.**
+ - Three folders will be generated: one with input files for shieldings, one with input files for H–H couplings, and one with input files for C–H couplings. Note that the C–H couplings take a long time to run, ca. 1 hour per coupling constant on four cores!
+
+**Step 6: Obtain Boltzmann-averaged chemical shifts and coupling constants**
+
+ - This is readily done in Excel. I am not yet sure if I want to write scripts for this.
 
 **Tools for data analysis**
 
