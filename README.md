@@ -45,8 +45,8 @@ Please use a separate folder for each of the following steps! Not only is it muc
 
 **Step 6: Obtain Boltzmann-averaged chemical shifts and coupling constants**
 
- - For chemical shifts: navigate to the folder containing the shielding .out files, then run `shieldings.py *.out -a`. This generates a csv file which contains shieldings for all conformers, populations, etc. The chemical shifts are calculated by linear scaling of the isotropic shielding. The slopes and intercepts (for 1H and 13C) are hard-coded; they can be changed if desired.
- - I'm making something to parse couplings now.
+ - For chemical shifts: navigate to the folder containing the shielding .out files, then run `shieldings.py *.out -a`. This generates a fairly self-explanatory csv file which contains shieldings for all conformers, populations, etc. The chemical shifts are calculated by linear scaling of the isotropic shielding. The slopes and intercepts (for 1H and 13C) are hard-coded; they can be changed if desired.
+ - Likewise, for couplings, `couplings.py *.out -a` will do the job.
  
 **Tools for data analysis**
 
