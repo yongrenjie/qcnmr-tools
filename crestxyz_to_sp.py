@@ -17,7 +17,7 @@ if __name__ == '__main__':
     with open(crest_file, 'r') as crest_xyz_file:
         line_number = 0
         conformer_number = 1
-        output_file = open('s2_{}_sp.inp'.format(conformer_number), 'w')
+        output_file = open('s2_{}_sp_svp.inp'.format(conformer_number), 'w')
         for line in crest_xyz_file:
             line_number = line_number + 1
             number_of_atoms_found = re.match(r'\s+(\d+)\s+', line)

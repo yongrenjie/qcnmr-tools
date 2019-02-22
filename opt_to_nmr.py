@@ -17,8 +17,8 @@ import argparse
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("csvname", action='store', help='csv file to filter conformers by.')
-    parser.add_argument("-n", "--nuclei", type=int, nargs="*", help="Labels of H nuclei to calculate J(CH) for."
-                                                                    "WARNING: USE ATOM LABELS STARTING FROM 1, i.e."
+    parser.add_argument("-n", "--nuclei", type=int, nargs="*", help="Labels of H nuclei to calculate J(CH) for. "
+                                                                    "WARNING: USE ATOM LABELS STARTING FROM 1, i.e. "
                                                                     "exactly what is shown in Avogadro")
     return parser.parse_args()
 
