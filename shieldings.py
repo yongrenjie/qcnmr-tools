@@ -10,6 +10,14 @@ When calling -a, the script automatically reads in the renormalised population o
 is placed into the nmr input files automatically by opt_to_nmr.py as a comment. The ORCA .out file therefore also
 contains the information, since the input file is automatically printed near the top of the .out file.
 Then, it automatically averages the shifts and scales them according to the slope/intercept previously found.
+
+Often there are nuclei which are rendered equivalent by symmetry or by rapid interconversion (e.g. the three protons in
+a methyl group). If these have the labels 13, 14, and 15, then pass these labels (separated by commas) with -e:
+    shieldings.py *.out -a -e 13,14,15
+The script will automatically average these shifts and place the mean in a new row.
+Multiple groups of nuclei can be specified, e.g.
+    shieldings.py *.out -a -e 13,14,15 16,17,18 20,21
+Note that the use of -e <NUCLEI> only has an effect when in analyse mode.
 '''
 
 
