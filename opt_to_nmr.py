@@ -65,7 +65,10 @@ if __name__ == '__main__':
     for file in ls:
         if file.endswith(".xyz") and not file.startswith("."):
             # second conditional is necessary, otherwise it tries to read all the hidden files
-            conformer_number = int(file.split(".")[-2].split("_")[1])  # gets conformer number from file name
+            try:
+                conformer_number = int(file.split(".")[-2].split("_")[1])  # gets conformer number from file name
+            except:
+                conformer_number = 0  # in case of stray xyz files
             if conformer_number in allowed_conformers:
                 allowed_xyz_files.append(file)
 
