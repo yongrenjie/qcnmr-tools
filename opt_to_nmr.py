@@ -17,7 +17,7 @@ import argparse
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("csvname", action='store', help='csv file to filter conformers by.')
-    parser.add_argument("-n", "--nuclei", type=int, nargs="*", help="Labels of H nuclei to calculate J(CH) for. "
+    parser.add_argument("-n", "--nuclei", type=int, nargs="*", help="Labels of H nuclei to calculate J(HH)/J(CH) for. "
                                                                     "WARNING: USE ATOM LABELS STARTING FROM 1, i.e. "
                                                                     "exactly what is shown in Avogadro")
     return parser.parse_args()
@@ -33,17 +33,19 @@ if __name__ == '__main__':
                         "    Nuclei = all H { shift }\n" \
                         "end"
     eprnmr_coupling_hh =  "%eprnmr\n" \
-                        "    Ori = GIAO\n" \
-                        "    Nuclei = all H { ssfc, ist = 1 }\n" \
-                        "    SpinSpinRThresh 3.5\n" \
+                        "    Ori = GIAO\n"
                         "end"
     eprnmr_coupling_ch = "%eprnmr\n" \
                          "    Ori = GIAO\n"
     if args.nuclei:
         for i in args.nuclei:
-            eprnmr_coupling_ch = eprnmr_coupling_ch +  "    Nuclei = " + str(i) + " { ssall, ist = 1 }\n"
+            eprnmr_coupling_hh = eprnmr_coupling_hh + "    Nuclei = " + str(i) + " { ssfc, ist = 1 }\n"
+            eprnmr_coupling_ch = eprnmr_coupling_ch + "    Nuclei = " + str(i) + " { ssall, ist = 1 }\n"
     else:
+        eprnmr_coupling_hh = eprnmr_coupling_hh + "    Nuclei = all H { ssfc, ist = 1 }\n"
         eprnmr_coupling_ch = eprnmr_coupling_ch + "    Nuclei = all H { ssall, ist = 1 }\n"
+
+    eprnmr_coupling_hh = eprnmr_coupling_hh + "    SpinSpinRThresh 3.5\nend"
     eprnmr_coupling_ch = eprnmr_coupling_ch + "    SpinSpinRThresh 1.3\nend"
 
     # reads in allowed conformers, energies, and (renormalised) populations from the csv file
