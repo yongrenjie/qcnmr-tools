@@ -73,7 +73,11 @@ if __name__ == '__main__':
         file_number = 0
         for file in args.filenames:
             file_number = file_number + 1
-            conformer_number = int(file.split(".")[-2].split("_")[1])  # gets conformer number from file name
+            # TODO: This needs to be deprecated once I'm done with the old analyses.
+            try:
+                conformer_number = int(file.split(".")[-2].split("_")[1])  # gets conformer number from file name
+            except:
+                conformer_number = int(file.split(".")[-2].split("_")[-1])  # gets conformer number from file name
             if file_number == 1:
                 atom_labels, atom_types, shieldings, population = parse_shielding_file(file)
                 if atom_labels:
