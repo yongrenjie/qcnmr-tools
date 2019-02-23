@@ -33,7 +33,7 @@ def get_args():
                         nargs="*")
     parser.add_argument("-c", "--csv", action="store_true", help="Output a csv file for every nmr output file found")
     parser.add_argument("-a", "--analyse", action="store_true", help="Enter analyse mode (see comments in script for details")
-    parser.add_argument("-e", "--equiv", type=str, nargs="*", help="List of symmetry-equivalent nuclei")
+    parser.add_argument("-e", "--equiv", type=str, nargs="*", help="Put in symmetry-related nuclei here, separated by commas")
     return parser.parse_args()
 
 
@@ -104,14 +104,16 @@ if __name__ == '__main__':
 
         # average symmetry-equivalent nuclei
         if args.equiv:
-            shifts_to_be_averaged = []
-            for i in full_df.index:
-                if full_df.at[i, 'atom_label'] in args.equiv:
-                    shifts_to_be_averaged.append(full_df.at[i, 'shift'])
-            average = sum(shifts_to_be_averaged)/len(shifts_to_be_averaged)
-            average_shift = pd.Series(average, index=['shift'])
-            average_shift.name = '_'.join(str(i) for i in args.equiv)
-            full_df = full_df.append(average_shift)
+            for nuclei_set in args.equiv:
+                nuclei = nuclei_set.split(",")
+                shifts_to_be_averaged = []
+                for i in full_df.index:
+                    if full_df.at[i, 'atom_label'] in nuclei:
+                        shifts_to_be_averaged.append(full_df.at[i, 'shift'])
+                average = sum(shifts_to_be_averaged)/len(shifts_to_be_averaged)
+                average_shift = pd.Series(average, index=['shift'])
+                average_shift.name = nuclei_set
+                full_df = full_df.append(average_shift)
 
         # round final chemical shift to 2 decimal places
         full_df['shift'] = full_df['shift'].round(2)
