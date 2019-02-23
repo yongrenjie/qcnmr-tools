@@ -34,7 +34,6 @@ if __name__ == '__main__':
                         "end"
     eprnmr_coupling_hh =  "%eprnmr\n" \
                         "    Ori = GIAO\n"
-                        "end"
     eprnmr_coupling_ch = "%eprnmr\n" \
                          "    Ori = GIAO\n"
     if args.nuclei:
