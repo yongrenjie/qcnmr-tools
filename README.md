@@ -46,9 +46,15 @@ Please use a separate folder for each of the following steps! Not only is it muc
 **Step 6: Obtain Boltzmann-averaged chemical shifts and coupling constants**
 
  - For chemical shifts: navigate to the folder containing the shielding .out files, then run `shieldings.py *.out -a`. This generates a fairly self-explanatory csv file which contains shieldings for all conformers, populations, etc. The chemical shifts are calculated by linear scaling of the isotropic shielding. The slopes and intercepts (for 1H and 13C) are hard-coded; they can be changed if desired.
- - Likewise, for couplings, `couplings.py *.out -a` will do the job.
+ - `shieldings.py` is capable of averaging shifts of multiple equivalent nuclei using `-e`. See the comments at the top of the script for more details.
+ - Likewise, for couplings, `couplings.py *.out -a` will do the job, but does not have the same `-e` functionality.
  
 **Tools for data analysis**
 
  - To produce graphics analogous to that found in Grimme's SI, run `line_plot_energies.py <csv1>.csv <csv>2.csv ...`. Make sure that all the csv files passed to this script have the same number of conformers. This script plot the energies of each conformer at different levels of theory (one csv file per level of theory). The zero of energy is taken to be the first conformer. However, I find that this is not a particularly useful way of presenting data.
  - Instead I have chosen to use a scatter plot to present the data. The file `scatter_energies.py` takes two csv files, one earlier and one after: for example, this can be the csv files (generated for all conformers) from the CREST job and the first SP job, for example. The question we really want to answer is: given that we will be using the energies from the "later" step to filter the CRE, *is the "earlier" step finding all the conformers which would pass this later filter*? By using the `-t X` option, the script automatically colours the points which would *pass* the next filter of X kcal/mol in green. Then it becomes much clearer to see how well the "earlier" step is doing at finding these conformers which would pass the next filter.
+ 
+ **Miscellaneous things**
+ 
+  - `ls *.inp -l | wc -l` counts how many input files are in a folder.
+  - `grep -o "ORCA TERMINATED NORMALLY" *.out | wc -l` counts how many jobs are done.
