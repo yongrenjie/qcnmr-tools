@@ -41,7 +41,10 @@ if __name__ == '__main__':
     allowed_xyz_files = []
     for file in ls:
         if file.endswith(".xyz"):
-            conformer_number = int(file.split(".")[-2].split("_")[1])  # gets conformer number from file name
+            try:
+                conformer_number = int(file.split(".")[-2].split("_")[1])  # gets conformer number from file name
+            except:
+                conformer_number = 0   # to deal with other stray .xyz files, such as crest_conformer.xyz
             if conformer_number in allowed_conformers:
                 allowed_xyz_files.append(file)
 
