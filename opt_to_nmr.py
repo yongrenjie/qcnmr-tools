@@ -59,7 +59,9 @@ if __name__ == '__main__':
                 allowed_conformers.append(int(line.split(",")[1]))
                 allowed_conformer_energies.append(float(line.split(",")[2]))
                 allowed_conformer_populations.append(float(line.split(",")[6]))
-    print(allowed_conformers)
+    print()
+    print("Input files will be generated for {} conformers: {}".format(len(allowed_conformers), allowed_conformers))
+    print()
 
     ls = os.listdir()
     allowed_xyz_files = []
@@ -78,6 +80,7 @@ if __name__ == '__main__':
         os.mkdir("s5-shielding")
     except:
         pass
+    print("Generating shielding input files...")
     for file in allowed_xyz_files:
         conformer_number = int(file.split(".")[-2].split("_")[1])  # gets conformer number from file name
         inp_name = "s5-shielding/s5_{}_nmr_shielding.inp".format(conformer_number) # Change if desired
@@ -100,12 +103,22 @@ if __name__ == '__main__':
                 print("*", file=inp_file)
                 print("", file=inp_file)
                 print(eprnmr_shielding, file=inp_file)
+    print("Shielding input files written to s5-shielding.")
+    print()
 
+    if args.nuclei:
+        print("Couplings will be calculated for the following H nuclei: {}".format(args.nuclei))
+    else:
+        print("WARNING: Couplings will be calculated for all H nuclei!")
+        print("Please consider specifying a subset of nuclei to calculate couplings for "
+              "in order to reduce computational time.")
+    print()
     # generate HH coupling input files
     try:
         os.mkdir("s6a-HHcoupling")
     except:
         pass
+    print("Generating H–H coupling input files...")
     for file in allowed_xyz_files:
         conformer_number = int(file.split(".")[-2].split("_")[1])  # gets conformer number from file name
         inp_name = "s6a-HHcoupling/s6a_{}_nmr_HHcoupling.inp".format(conformer_number)  # Change if desired
@@ -129,12 +142,15 @@ if __name__ == '__main__':
                 print("*", file=inp_file)
                 print("", file=inp_file)
                 print(eprnmr_coupling_hh, file=inp_file)
+    print("H–H coupling input files written to s6a-HHcoupling.")
+    print()
 
     # generate CH coupling input files
     try:
         os.mkdir("s6b-CHcoupling")
     except:
         pass
+    print("Generating C–H coupling input files...")
     for file in allowed_xyz_files:
         conformer_number = int(file.split(".")[-2].split("_")[1])  # gets conformer number from file name
         inp_name = "s6b-CHcoupling/s6b_{}_nmr_CHcoupling.inp".format(conformer_number)  # Change if desired
@@ -158,3 +174,5 @@ if __name__ == '__main__':
                 print("*", file=inp_file)
                 print("", file=inp_file)
                 print(eprnmr_coupling_ch, file=inp_file)
+    print("C–H coupling input files written to s6b-CHcoupling.")
+    print()

@@ -35,7 +35,9 @@ if __name__ == '__main__':
             if line_number > 1:
                 allowed_conformers.append(int(line.split(",")[1]))
                 allowed_conformer_energies.append(float(line.split(",")[2]))
-    print(allowed_conformers)
+    print()
+    print("Input files will be generated for {} conformers: {}".format(len(allowed_conformers), allowed_conformers))
+    print()
 
     ls = os.listdir()
     allowed_xyz_files = []
@@ -52,6 +54,7 @@ if __name__ == '__main__':
         os.mkdir("s4-sp")
     except:
         pass
+    print("Generating single point input files...")
     for file in allowed_xyz_files:
         conformer_number = int(file.split(".")[-2].split("_")[1])  # gets conformer number from file name
         inp_name = "s4-sp/s4_{}_sp_tzvpp.inp".format(conformer_number) # Change if desired
@@ -71,3 +74,5 @@ if __name__ == '__main__':
                     line_count = line_count + 1
                 print("*", file=inp_file)
                 print("", file=inp_file)
+    print("Single point input files written to s4-sp.")
+    print()
