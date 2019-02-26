@@ -13,6 +13,7 @@
 
 import os
 import argparse
+import sys
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -25,6 +26,32 @@ def get_args():
 if __name__ == '__main__':
     args = get_args()
     csv_file = args.csvname
+
+    # Check if nuclei for couplings are not specified
+    if args.nuclei:
+        print()
+        print("Couplings will be calculated for the following H nuclei: {}".format(args.nuclei))
+    else:
+        print()
+        print("WARNING: Couplings will be calculated for all H nuclei!")
+        print("Please consider specifying a subset of nuclei to calculate couplings for "
+              "in order to reduce computational time.")
+        print()
+        confirmation = input("If you want to go ahead with this, please type 'yes'.\n"
+                             "Otherwise, please enter the labels of the nuclei to calculate J(HH)/J(CH) for "
+                             "(separated by commas). Note that these nuclei should be counted starting from 1, not 0: ")
+        if confirmation.lower() == "yes":
+            pass
+        else:
+            try:
+                args.nuclei = []
+                for i in confirmation.split(","):
+                    args.nuclei.append(int(i.strip()))
+                print("Couplings will be calculated for the following H nuclei: {}".format(args.nuclei))
+            except:
+                sys.exit("Non-integer input detected! Exiting...")
+    print()
+
 
     keywords = "! PBE0 cc-pVTZ cc-pVTZ/JK D3BJ CPCM(Methanol) PAL4"  # Change this if desired.
     eprnmr_shielding = "%eprnmr\n" \
@@ -106,13 +133,6 @@ if __name__ == '__main__':
     print("Shielding input files written to s5-shielding.")
     print()
 
-    if args.nuclei:
-        print("Couplings will be calculated for the following H nuclei: {}".format(args.nuclei))
-    else:
-        print("WARNING: Couplings will be calculated for all H nuclei!")
-        print("Please consider specifying a subset of nuclei to calculate couplings for "
-              "in order to reduce computational time.")
-    print()
     # generate HH coupling input files
     try:
         os.mkdir("s6a-HHcoupling")
