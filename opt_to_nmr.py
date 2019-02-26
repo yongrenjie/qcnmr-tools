@@ -71,7 +71,7 @@ if __name__ == '__main__':
         eprnmr_coupling_hh = eprnmr_coupling_hh + "    Nuclei = all H { ssfc, ist = 1 }\n"
         eprnmr_coupling_ch = eprnmr_coupling_ch + "    Nuclei = all H { ssall, ist = 1 }\n"
 
-    eprnmr_coupling_hh = eprnmr_coupling_hh + "    SpinSpinRThresh 3.65\nend"
+    eprnmr_coupling_hh = eprnmr_coupling_hh + "    SpinSpinRThresh 3.6\nend"
     eprnmr_coupling_ch = eprnmr_coupling_ch + "    SpinSpinRThresh 1.3\nend"
 
     # reads in allowed conformers, energies, and (renormalised) populations from the csv file
