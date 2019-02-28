@@ -34,14 +34,14 @@ Please use a separate folder for each of the following steps! Not only is it muc
  - Once the calculations are done, `energies.py *.out` can again be used to generate the csv file `opt_filtered_conformers.csv` which contains all conformers below X kcal/mol.
 
 **Step 4: Calculate the energy of all conformers at a higher level of theory and select only the conformers which contribute a cumulative X% population** (default TPSS/def2-TZVPP/D3BJ/CPCM(Methanol))
- - Copy all the optimised xyz files, as well as `opt_filtered_conformers.csv`, to another directory!
- - In this directory, run `opt_to_sp.py opt_filtered_conformers.csv`. This generates input files for every conformer found in the csv file.
+
+ - In the directory containing the optimised .xyz files as well as the csv file produced in the previous step, run `opt_to_sp.py opt_filtered_conformers.csv`. This generates a folder, `s4-sp`, containing input files for every conformer found in the csv file.
  - After the calculations are done, `energies.py` will be again able to extract the energies. Using the flag `-p X`, the script will automatically calculate Boltzmann weights as well as populations. It then chooses the conformers which contribute a total of X% cumulative population, renormalises the populations of the remaining conformers, and produces `nmr_filtered_conformers.csv`. **This script assumes no degeneracy in the conformers! Be careful with systems possessing any kind of symmetry!**
 
 **Step 5: Calculate NMR parameters for all surviving conformers**
 
  - To generate the input files for the NMR calculations, copy `nmr_filtered_conformers.csv` to the folder containing the optimised `.xyz` files.
- - Run `opt_to_nmr.py nmr_filtered_conformers.csv -n <NUCLEI>`. Multiple atom labels may be specified after `-n`; it serves to specify which hydrogen atoms the one-bond C–H coupling constants will be calculated for. **NOTE: Because of some quirks of ORCA input, the atom labels given here should be counted from 1, as opposed to the usual 0.**
+ - Run `opt_to_nmr.py nmr_filtered_conformers.csv -n <NUCLEI>`. Multiple atom labels may be specified after `-n`; it serves to specify which hydrogen atoms the one-bond C–H coupling constants will be calculated for. **NOTE: Because ORCA input is weird, the atom labels given here should be counted from 1, as opposed to the usual 0. See the ORCA manual for more information.**
  - Three folders will be generated:
    - `s5-shieldings`, with input files for calculation of NMR shifts
    - `s6a-HHcouplings`, with input files for H–H couplings. These jobs only calculate the Fermi contact contribution to the coupling constant. In the case of H–H couplings, this has been shown to be the main contributor; however, I have not done any systematic analysis or scaling to experimental values... yet.
