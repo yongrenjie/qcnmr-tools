@@ -45,7 +45,7 @@ Please use a separate folder for each of the following steps! Not only is it muc
  - Three folders will be generated:
    - `s5-shieldings`, with input files for calculation of NMR shifts
    - `s6a-HHcouplings`, with input files for H–H couplings. These jobs only calculate the Fermi contact contribution to the coupling constant. In the case of H–H couplings, this has been shown to be the main contributor; however, I have not done any systematic analysis or scaling to experimental values... yet.
-    - `s6b-CHcouplings`, with input files for one-bond C–H couplings. These calculate all contributions to the coupling constant, not just the Fermi contact term. Note that these take a long time to run, ca. 1 hour per coupling constant on four cores!
+   - `s6b-CHcouplings`, with input files for one-bond C–H couplings. These calculate all contributions to the coupling constant, not just the Fermi contact term. Note that these take a long time to run, ca. 1 hour per coupling constant on four cores!
 
 **Step 6: Obtain Boltzmann-averaged chemical shifts and coupling constants**
 
@@ -61,10 +61,14 @@ Please use a separate folder for each of the following steps! Not only is it muc
  **Miscellaneous things**
  
  - To count the number of input files in a folder:
-
 ```
 ls *.inp -l | wc -l
 ```
-
-  - `grep -o "ORCA TERMINATED NORMALLY" *.out | wc -l` counts how many jobs are done.
-  - If you calculated numerical frequencies, `grep -E "^[ ]*[0-9][0-9]*:[ ]*-[0-9][0-9]*.[0-9][0-9] cm\*\*-1$" *.out` tells you if there are any imaginary frequencies.
+ - To count the number of completed ORCA jobs in a folder:
+```
+grep -o "ORCA TERMINATED NORMALLY" *.out | wc -l
+```
+ - To find any imaginary frequencies in the optimisation output files:
+```
+grep -E "^[ ]*[0-9][0-9]*:[ ]*-[0-9][0-9]*.[0-9][0-9] cm\*\*-1$" *.out
+```
