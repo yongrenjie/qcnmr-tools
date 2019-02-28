@@ -12,6 +12,7 @@ Please use a separate folder for each of the following steps! Not only is it muc
  - Construct an xyz file using software of your choice (in Angstroms).
  - Run `qcrest <file_name>.xyz`; this takes an .xyz file (in Angstroms), automatically converts it to a `coord` file (in Bohrs), prints a submission script for CREST, and submits the job to the cluster using the newly generated `coord` file.
  - The defaults for qcrest are to request 4 cores, use methanol as solvent (GBSA), and to use an energy cutoff of 6 kcal/mol. These can be changed using command line arguments; use `qcrest -h` for more information.
+ - The default length of each MD simulation is determined by the program based on some estimate of the "flexibility". Grimme doesn't explain this in great detail, but you can override this if needed using `-t <TIME_in_ps>`.
  - The output of the CREST job is saved to `<name>_crest.out` (where `<name>.xyz` was the original file submitted with `qcrest`). This file will contain the GFN-xTB energies. The full conformer ensemble (without rotamers) is in `crest_conformers.xyz` and at this stage can be visualised using e.g. Avogadro. If desired, the conformer-rotamer ensemble can be found in `crest_rotamers_6.xyz`.
 
 **Step 2: The CRE is then subjected to a single-point calculation with a relatively cheap level of theory. Any conformers above a certain energy (relative to the lowest energy conformer) are rejected.** (default TPSS/def2-SVP/D3BJ/CPCM(Methanol), cutoff 4 kcal/mol)
