@@ -8,7 +8,8 @@ def get_args():
     parser.add_argument("filename", action='store', help='.xyz file(s) to convert and submit')
     parser.add_argument("-g", "--solv", default='methanol', help="Specify solvent to be used (GBSA) (default methanol)")
     parser.add_argument("-T", "--threads", type=int, default=4, help="Specify number of threads to use (default 4)")
-    parser.add_argument("-c", "--cutoff", type=int, help="Specify energy threshold to cut off above (default 6)")
+    parser.add_argument("-c", "--cutoff", type=int, help="Specify energy threshold to use (default 6)")
+    parser.add_argument("-t", "--time", type=int, help="Specify length of MTD/MD runs (in ps)")
     return parser.parse_args()
 
 def print_bash_script(xyz_filename):
@@ -37,6 +38,8 @@ def print_bash_script(xyz_filename):
             crest_command = crest_command + "-T {} ".format(args.threads)
         if args.cutoff:
             crest_command = crest_command + "-ewin {} ".format(args.cutoff)
+        if args.time:
+            crest_command = crest_command + "-len {} ".format(args.cutoff)
         print('{} > $ORIG/{}_crest.out'.format(crest_command, base_name), file=bash_script)
         print('rm -f *.tmp', file=bash_script)
         print('cp -R * $ORIG', file=bash_script)
@@ -46,7 +49,6 @@ def print_bash_script(xyz_filename):
 
 def qsub_bash_script(sh_filename):
     os.system('qsub ' + sh_filename)
-    return 0
 
 def xyz_to_coord(xyz_filename):
     ANG_TO_BOHR = 1.8897261
