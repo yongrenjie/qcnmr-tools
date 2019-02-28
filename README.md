@@ -29,7 +29,7 @@ Please use a separate folder for each of the following steps! Not only is it muc
 **Step 3: Optimise all conformers which pass the previous filter. Any conformers above a certain energy (relative to the lowest energy conformer) are rejected.** (default TPSS/def2-SVP/D3BJ/CPCM(Methanol))
 
  - In order to generate the input files for the optimisation, both `crest_conformers.xyz` (generated in Step 1 as output of the CREST program) as well as `sp_filtered_conformers.csv` (generated in Step 2) are required.
- - Run `crestxyz_to_opt.py crest_conformers.xyz sp_filtered_conformers.csv`. This generates one input file for each conformer that is in the csv file.
+ - Run `crestxyz_to_opt.py crest_conformers.xyz sp_filtered_conformers.csv`. This generates a folder, `s3-opt`, which contains all the input files for the optimisation. By default, the input files include the `NumFreq` keyword which requests numerical frequencies; this can be turned off by using `--nofreq`.
  - Once the calculations are done, `energies.py *.out` can again be used to generate the csv file `opt_filtered_conformers.csv` which contains all conformers below X kcal/mol.
 
 **Step 4: Calculate the energy of all conformers at a higher level of theory and select only the conformers which contribute a cumulative X% population** (default TPSS/def2-TZVPP/D3BJ/CPCM(Methanol))
