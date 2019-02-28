@@ -60,6 +60,8 @@ Please use a separate folder for each of the following steps! Not only is it muc
  
  **Miscellaneous things**
  
-  - `ls *.inp -l | wc -l` counts how many input files are in a folder.
+ - To count the number of input files in a folder:
+ 
+     `ls *.inp -l | wc -l`
   - `grep -o "ORCA TERMINATED NORMALLY" *.out | wc -l` counts how many jobs are done.
   - If you calculated numerical frequencies, `grep -E "^[ ]*[0-9][0-9]*:[ ]*-[0-9][0-9]*.[0-9][0-9] cm\*\*-1$" *.out` tells you if there are any imaginary frequencies.
