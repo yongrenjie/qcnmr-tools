@@ -9,6 +9,7 @@ The directory containing the scripts must be added to `$PATH`, and the files mus
 Please use a separate folder for each of the following steps! Not only is it much cleaner, but also required for some of the scripts to work properly.
 
 **Step 1: Generate a conformer-rotamer ensemble using CREST**
+
  - Construct an xyz file using software of your choice (in Angstroms).
  - Run `qcrest <file_name>.xyz`; this takes an .xyz file (in Angstroms), automatically converts it to a `coord` file (in Bohrs), prints a submission script for CREST, and submits the job to the cluster using the newly generated `coord` file.
  - The defaults for qcrest are to request 4 cores, use methanol as solvent (GBSA), and to use an energy cutoff of 6 kcal/mol. These can be changed using command line arguments; use `qcrest -h` for more information.
