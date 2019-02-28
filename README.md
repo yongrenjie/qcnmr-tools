@@ -2,7 +2,7 @@
 
 Assorted scripts (Python 3) to aid with calculation of NMR properties.
 
-The NMR calculation workflow is adapted from [Grimme *et al.*, *Angew. Chem. Int. Ed.* **2017,** *56* (46), 14763–14769](https://doi.org/10.1002/anie.201708266). Below the key steps (as well as where the scripts come in) are described in more detail. Each individual script has more explanation.
+The NMR calculation workflow is adapted from [Grimme *et al.*, *Angew. Chem. Int. Ed.* **2017,** *56* (46), 14763–14769](https://doi.org/10.1002/anie.201708266). The conformer generation uses a newer MTD/GC methodology from Grimme ([ChemRxiv](https://chemrxiv.org/articles/Exploration_of_Chemical_Compound_Conformer_and_Reaction_Space_with_Meta-Dynamics_Simulations_Based_on_Tight-Binding_Quantum_Chemical_Calculations/7660532)), which was shown to be superior to the MF/MD/GC methodology in the *Angew* paper. Below, the key steps (as well as where the scripts come in) are described in more detail. Each individual script has more explanation.
 
 The directory containing the scripts must be added to `$PATH`, and the files must be made executable by running `chmod u+x *` in the directory containing the scripts.
 
@@ -41,7 +41,10 @@ Please use a separate folder for each of the following steps! Not only is it muc
 
  - To generate the input files for the NMR calculations, copy `nmr_filtered_conformers.csv` to the folder containing the optimised `.xyz` files.
  - Run `opt_to_nmr.py nmr_filtered_conformers.csv -n <NUCLEI>`. Multiple atom labels may be specified after `-n`; it serves to specify which hydrogen atoms the one-bond C–H coupling constants will be calculated for. **NOTE: Because of some quirks of ORCA input, the atom labels given here should be counted from 1, as opposed to the usual 0.**
- - Three folders will be generated: one with input files for shieldings, one with input files for H–H couplings, and one with input files for C–H couplings. Note that the C–H couplings take a long time to run, ca. 1 hour per coupling constant on four cores!
+ - Three folders will be generated:
+   - `s5-shieldings`, with input files for calculation of NMR shifts
+   - `s6a-HHcouplings`, with input files for H–H couplings. These jobs only calculate the Fermi contact contribution to the coupling constant. In the case of H–H couplings, this has been shown to be the main contributor; however, I have not done any systematic analysis or scaling to experimental values... yet.
+    - `s6b-CHcouplings`, with input files for one-bond C–H couplings. These calculate all contributions to the coupling constant, not just the Fermi contact term. Note that these take a long time to run, ca. 1 hour per coupling constant on four cores!
 
 **Step 6: Obtain Boltzmann-averaged chemical shifts and coupling constants**
 
