@@ -2,11 +2,13 @@
 
 import re
 import argparse
+import os
 
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("crestname", action='store', help='crest_conformers.xyz file')
     parser.add_argument("csvname", action='store', help='csv file to filter conformers by')
+    parser.add_argument("--nofreq", action='store_true', help='Disable frequency calculation after optimisation')
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -14,7 +16,9 @@ if __name__ == '__main__':
     crest_file = args.crestname
     csv_file = args.csvname
 
-    keywords = "! TPSS def2-SVP D3BJ CPCM(Methanol) PAL4 Opt NumFreq"
+    keywords = "! TPSS def2-SVP D3BJ CPCM(Methanol) PAL4 Opt "
+    if not args.nofreq:
+        keywords = keywords + "NumFreq "
 
     allowed_conformers = []
     allowed_conformer_energies = []
@@ -25,7 +29,16 @@ if __name__ == '__main__':
             if line_number > 1:
                 allowed_conformers.append(int(line.split(",")[1]))
                 allowed_conformer_energies.append(float(line.split(",")[2]))
-    print(allowed_conformers)
+    print()
+    print("Input files will be generated for {} conformers: {}".format(len(allowed_conformers), allowed_conformers))
+    if args.nofreq:
+        print("No frequency calculation requested.")
+    print()
+
+    try:
+        os.mkdir("s3-opt")
+    except:
+        pass
 
     with open(crest_file, 'r') as crest_xyz_file:
         line_number = 0
@@ -39,11 +52,11 @@ if __name__ == '__main__':
             if number_of_atoms_found:
                 conformer_number = conformer_number + 1
                 if conformer_number == allowed_conformers[0]:
-                    output_file = open("s3_{}_opt_svp.inp".format(conformer_number), 'w')
+                    output_file = open("s3-opt/s3_{}_opt_svp.inp".format(conformer_number), 'w')
                 elif conformer_number in allowed_conformers:
                     print("*", file=output_file)
                     output_file.close()
-                    output_file = open("s3_{}_opt_svp.inp".format(conformer_number), 'w')
+                    output_file = open("s3-opt/s3_{}_opt_svp.inp".format(conformer_number), 'w')
 
             if conformer_number in allowed_conformers:
                 if number_of_atoms_found:
@@ -59,3 +72,6 @@ if __name__ == '__main__':
 
         print("*", file=output_file)
         output_file.close()
+
+    print("Done.")
+    print()
