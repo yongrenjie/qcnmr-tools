@@ -39,7 +39,7 @@ def print_bash_script(xyz_filename):
         if args.cutoff:
             crest_command = crest_command + "-ewin {} ".format(args.cutoff)
         if args.time:
-            crest_command = crest_command + "-len {} ".format(args.cutoff)
+            crest_command = crest_command + "-len {} ".format(args.time)
         print('{} > $ORIG/{}_crest.out'.format(crest_command, base_name), file=bash_script)
         print('rm -f *.tmp', file=bash_script)
         print('cp -R * $ORIG', file=bash_script)
