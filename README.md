@@ -17,7 +17,7 @@ Please use a separate folder for each of the following steps! Not only is it muc
 
 **Step 2: The CRE is then subjected to a single-point calculation with a relatively cheap level of theory. Any conformers above a certain energy (relative to the lowest energy conformer) are rejected.** (default TPSS/def2-SVP/D3BJ/CPCM(Methanol), cutoff 4 kcal/mol)
 
- - Run `crestxyz_to_sp.py` on the `crest_conformers.xyz` file. This will generate one input file per conformer. The ORCA keywords are hard-coded; this can obviously be changed if needed.
+ - Run `crestxyz_to_sp.py` in the directory containing the `crest_conformers.xyz` file. This will generate a folder, `s2-sp`, containing one input file per conformer. The ORCA keywords are hard-coded; this can be changed if needed.
  - In theory, this can be done using the allxyz feature in ORCA. The `old_scripts` folder contains several scripts that help with generating and manipulating allxyz files. However, I dislike this for several reasons. In decreasing order of severity, these are: 
    - Sometimes the `.out` file gets truncated/corrupted for no apparent reason;
    - With large allxyz files the program can crash due to (what appears to be memory issues);
