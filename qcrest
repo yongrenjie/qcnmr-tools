@@ -31,7 +31,7 @@ def print_bash_script(xyz_filename):
         print('cp coord $SCR', file=bash_script)
         print('#', file=bash_script)
         print('cd $SCR', file=bash_script)
-        crest_command = "crest_2.5.1 -nmr "
+        crest_command = "crest_2.6 -nmr "
         if args.solv:
             crest_command = crest_command + "-g {} ".format(args.solv)
         if args.threads:
