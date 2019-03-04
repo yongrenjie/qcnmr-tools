@@ -50,7 +50,6 @@ if __name__ == '__main__':
         for i in range(args.constrain):
             geom_block = geom_block + "    {{ C {} C }}\n".format(i + total_atoms - args.constrain)
         geom_block = geom_block + "  end\nend\n"
-        print(geom_block)
 
     try:
         os.mkdir("s3-opt")
