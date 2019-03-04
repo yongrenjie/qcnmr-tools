@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import argparse
 
+
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("earlier_csv",
@@ -25,6 +26,7 @@ def get_args():
                         help="Plots a y = x line.")
     return parser.parse_args()
 
+
 '''
 def get_full_list(file):
     conformer_count = 1
@@ -39,6 +41,7 @@ def get_full_list(file):
     return conformer_numbers, conformer_energies
 '''
 
+
 def get_energies(file):
     conformer_energies = []
     with open(file, 'r') as csv_file:
@@ -47,8 +50,8 @@ def get_energies(file):
                 conformer_energies.append(float(line.rstrip("\n").split(",")[-1]))
     return conformer_energies
 
+
 if __name__ == '__main__':
-    print("Please make sure that the conformer numbers in both csv files line up properly.")
     args = get_args()
 
     earlier_energies = np.array(get_energies(args.earlier_csv))
