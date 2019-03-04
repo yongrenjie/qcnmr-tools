@@ -21,6 +21,8 @@ def get_args():
     parser.add_argument("-n", "--nuclei", type=int, nargs="*", help="Labels of H nuclei to calculate J(HH)/J(CH) for. "
                                                                     "WARNING: USE ATOM LABELS STARTING FROM 1, i.e. "
                                                                     "exactly what is shown in Avogadro")
+    parser.add_argument("-r", "--remove", action="store", type=int, default=0,
+                        help="Number of atoms to remove from the end of each set of coordinates")
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -51,7 +53,6 @@ if __name__ == '__main__':
             except:
                 sys.exit("Non-integer input detected! Exiting...")
     print()
-
 
     keywords = "! PBE0 cc-pVTZ cc-pVTZ/JK D3BJ CPCM(Methanol) PAL4"  # Change this if desired.
     eprnmr_shielding = "%eprnmr\n" \
@@ -102,6 +103,11 @@ if __name__ == '__main__':
             if conformer_number in allowed_conformers:
                 allowed_xyz_files.append(file)
 
+    # determine total number of atoms
+    test_file = open(allowed_xyz_files[0], 'r')
+    total_atoms = int(test_file.readline().strip())
+    test_file.close()
+
     # generate shielding input files
     try:
         os.mkdir("s5-shielding")
@@ -113,6 +119,7 @@ if __name__ == '__main__':
         inp_name = "s5-shielding/s5_{}_nmr_shielding.inp".format(conformer_number) # Change if desired
 
         with open(file, 'r') as xyz_file:
+            atom_number = 0
             line_count = 1
             with open(inp_name, 'w') as inp_file:
                 print(keywords, file=inp_file)
@@ -125,7 +132,9 @@ if __name__ == '__main__':
                 print("*xyz 0 1", file=inp_file)
                 for line in xyz_file:
                     if line_count >= 3:
-                        print(line.rstrip("\n"), file=inp_file)
+                        if atom_number < total_atoms - args.remove:
+                            print(line.rstrip("\n"), file=inp_file)
+                        atom_number = atom_number + 1
                     line_count = line_count + 1
                 print("*", file=inp_file)
                 print("", file=inp_file)
@@ -144,6 +153,7 @@ if __name__ == '__main__':
         inp_name = "s6a-HHcoupling/s6a_{}_nmr_HHcoupling.inp".format(conformer_number)  # Change if desired
 
         with open(file, 'r') as xyz_file:
+            atom_number = 0
             line_count = 1
             with open(inp_name, 'w') as inp_file:
                 print(keywords, file=inp_file)
@@ -157,7 +167,9 @@ if __name__ == '__main__':
                 print("*xyz 0 1", file=inp_file)
                 for line in xyz_file:
                     if line_count >= 3:
-                        print(line.rstrip("\n"), file=inp_file)
+                        if atom_number < total_atoms - args.remove:
+                            print(line.rstrip("\n"), file=inp_file)
+                        atom_number = atom_number + 1
                     line_count = line_count + 1
                 print("*", file=inp_file)
                 print("", file=inp_file)
@@ -177,6 +189,7 @@ if __name__ == '__main__':
 
         with open(file, 'r') as xyz_file:
             line_count = 1
+            atom_number = 0
             with open(inp_name, 'w') as inp_file:
                 print(keywords, file=inp_file)
                 print("", file=inp_file)
@@ -189,7 +202,9 @@ if __name__ == '__main__':
                 print("*xyz 0 1", file=inp_file)
                 for line in xyz_file:
                     if line_count >= 3:
-                        print(line.rstrip("\n"), file=inp_file)
+                        if atom_number < total_atoms - args.remove:
+                            print(line.rstrip("\n"), file=inp_file)
+                        atom_number = atom_number + 1
                     line_count = line_count + 1
                 print("*", file=inp_file)
                 print("", file=inp_file)
