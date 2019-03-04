@@ -5,10 +5,14 @@ import argparse
 import os
 import sys
 
+
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--filename", help='File containing all conformers (default crest_conformers.xyz)')
+    parser.add_argument("-r", "--remove", action="store", type=int, default=0,
+                        help="Number of atoms to remove from the end of each set of coordinates")
     return parser.parse_args()
+
 
 if __name__ == '__main__':
     args = get_args()
@@ -21,6 +25,12 @@ if __name__ == '__main__':
         else:
             sys.exit("Please provide a valid xyz file with all conformers.")
 
+    # determine total number of atoms
+    test_file = open(crest_file, 'r')
+    total_atoms = int(test_file.readline().strip())
+    test_file.close()
+
+
     keywords = "! TPSS def2-SVP D3BJ CPCM(Methanol) PAL4 SP"
 
     try:
@@ -32,12 +42,14 @@ if __name__ == '__main__':
         with open(crest_file, 'r') as crest_xyz_file:
             line_number = 0
             conformer_number = 1
+            atom_number = 0
             output_file = open('s2-sp/s2_{}_sp_svp.inp'.format(conformer_number), 'w')
             for line in crest_xyz_file:
                 line_number = line_number + 1
                 number_of_atoms_found = re.match(r'\s+(\d+)\s+', line)
                 energy_found = re.match(r'\s+(-\d+.\d+)\s+', line)
                 if number_of_atoms_found:
+                    atom_number = 0
                     if line_number > 1:
                         print("*", file=output_file)
                         output_file.close()
@@ -51,7 +63,9 @@ if __name__ == '__main__':
                     print("#   GFN-xTB: {}".format(energy_found.group(1)), file=output_file)
                     print("* xyz 0 1", file=output_file)
                 else:
-                    print(line.rstrip("\n"), file=output_file)
+                    if atom_number < total_atoms - args.remove:
+                        print(line.rstrip("\n"), file=output_file)
+                    atom_number = atom_number + 1
             print("*", file=output_file)
             output_file.close()
             print("{} input files generated.".format(conformer_number))
