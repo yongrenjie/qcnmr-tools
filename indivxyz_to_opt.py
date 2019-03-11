@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import os
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -14,6 +15,8 @@ if __name__ == '__main__':
     args = get_args()
 
     keywords = input("Please enter the desired keywords:")
+
+    os.system("mkdir -p s3-opt")
 
     for file in args.filenames:
         conformer_number = int(file.split(".")[-2].split("_")[1])  # gets conformer number from file name
