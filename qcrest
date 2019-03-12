@@ -6,7 +6,7 @@ import argparse
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("filename", action='store', help='.xyz file(s) to convert and submit')
-    parser.add_argument("-g", "--solv", default='methanol', help="Specify solvent to be used (GBSA) (default methanol)")
+    parser.add_argument("-s", "--solv", default='methanol', help="Specify solvent to be used (GBSA) (default methanol)")
     parser.add_argument("-T", "--threads", type=int, default=4, help="Specify number of threads to use (default 4)")
     parser.add_argument("-c", "--cutoff", type=int, help="Specify energy threshold to use (default 6)")
     parser.add_argument("-t", "--time", type=int, help="Specify length of MTD/MD runs (in ps)")
