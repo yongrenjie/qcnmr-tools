@@ -21,8 +21,8 @@ def get_args():
     parser.add_argument("-n", "--nuclei", type=int, nargs="*", help="Labels of H nuclei to calculate J(HH)/J(CH) for. "
                                                                     "WARNING: USE ATOM LABELS STARTING FROM 1, i.e. "
                                                                     "exactly what is shown in Avogadro")
-    parser.add_argument("-r", "--remove", action="store", type=int, default=0,
-                        help="Number of atoms to remove from the end of each set of coordinates")
+    parser.add_argument("-a", "--atoms", action="store", type=int,
+                        help="Number of atoms to keep in input file (count this from 1)")
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -54,16 +54,15 @@ if __name__ == '__main__':
                 sys.exit("Non-integer input detected! Exiting...")
     print()
 
+    # generate keywords and eprnmr block for ORCA input file
     keywords = "! PBE0 cc-pVTZ cc-pVTZ/JK D3BJ CPCM(Methanol) PAL4"  # Change this if desired.
     eprnmr_shielding = "%eprnmr\n" \
                         "    Ori = GIAO\n" \
                         "    Nuclei = all C { shift }\n" \
                         "    Nuclei = all H { shift }\n" \
                         "end"
-    eprnmr_coupling_hh =  "%eprnmr\n" \
-                        "    Ori = GIAO\n"
-    eprnmr_coupling_ch = "%eprnmr\n" \
-                         "    Ori = GIAO\n"
+    eprnmr_coupling_hh = "%eprnmr\n"
+    eprnmr_coupling_ch = "%eprnmr\n"
     if args.nuclei:
         for i in args.nuclei:
             eprnmr_coupling_hh = eprnmr_coupling_hh + "    Nuclei = " + str(i) + " { ssfc, ist = 1 }\n"
@@ -74,6 +73,7 @@ if __name__ == '__main__':
 
     eprnmr_coupling_hh = eprnmr_coupling_hh + "    SpinSpinRThresh 3.6\nend"
     eprnmr_coupling_ch = eprnmr_coupling_ch + "    SpinSpinRThresh 1.3\nend"
+
 
     # reads in allowed conformers, energies, and (renormalised) populations from the csv file
     allowed_conformers = []
@@ -103,10 +103,6 @@ if __name__ == '__main__':
             if conformer_number in allowed_conformers:
                 allowed_xyz_files.append(file)
 
-    # determine total number of atoms
-    test_file = open(allowed_xyz_files[0], 'r')
-    total_atoms = int(test_file.readline().strip())
-    test_file.close()
 
     # generate shielding input files
     try:
@@ -132,8 +128,12 @@ if __name__ == '__main__':
                 print("*xyz 0 1", file=inp_file)
                 for line in xyz_file:
                     if line_count >= 3:
-                        if atom_number < total_atoms - args.remove:
+                        if args.atoms and atom_number < args.atoms:
                             print(line.rstrip("\n"), file=inp_file)
+                        elif not args.atoms:
+                            print(line.rstrip("\n"), file=inp_file)
+                        else:
+                            pass
                         atom_number = atom_number + 1
                     line_count = line_count + 1
                 print("*", file=inp_file)
@@ -167,8 +167,12 @@ if __name__ == '__main__':
                 print("*xyz 0 1", file=inp_file)
                 for line in xyz_file:
                     if line_count >= 3:
-                        if atom_number < total_atoms - args.remove:
+                        if args.atoms and atom_number < args.atoms:
                             print(line.rstrip("\n"), file=inp_file)
+                        elif not args.atoms:
+                            print(line.rstrip("\n"), file=inp_file)
+                        else:
+                            pass
                         atom_number = atom_number + 1
                     line_count = line_count + 1
                 print("*", file=inp_file)
@@ -202,8 +206,12 @@ if __name__ == '__main__':
                 print("*xyz 0 1", file=inp_file)
                 for line in xyz_file:
                     if line_count >= 3:
-                        if atom_number < total_atoms - args.remove:
+                        if args.atoms and atom_number < args.atoms:
                             print(line.rstrip("\n"), file=inp_file)
+                        elif not args.atoms:
+                            print(line.rstrip("\n"), file=inp_file)
+                        else:
+                            pass
                         atom_number = atom_number + 1
                     line_count = line_count + 1
                 print("*", file=inp_file)

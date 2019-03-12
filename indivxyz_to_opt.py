@@ -3,18 +3,32 @@
 import argparse
 import os
 
+
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("filenames",
-                        action='store',
-                        help='.xyz files to convert into input files.',
-                        nargs="*")
+    parser.add_argument("filenames", action='store', help='.xyz files to convert into input files', nargs="*")
+    parser.add_argument("-a", "--atoms", type=int,
+                        help='Number of atoms to optimise (everything else will be constrained')
     return parser.parse_args()
+
 
 if __name__ == '__main__':
     args = get_args()
 
-    keywords = input("Please enter the desired keywords:")
+    keywords = input("Please enter the desired keywords: ")
+
+    # determine total number of atoms and sets up %geom block accordingly
+    test_file = open(args.filenames[0], 'r')
+    total_atoms = int(test_file.readline().strip())
+    test_file.close()
+    geom_block = ""
+    if args.atoms:
+        if args.atoms < total_atoms:
+            geom_block = "%geom \n" \
+                         "  Constraints\n"
+            for i in range(args.atoms, total_atoms):
+                geom_block = geom_block + "    {{ C {} C }}\n".format(i)
+            geom_block = geom_block + "  end\nend\n"
 
     os.system("mkdir -p s3-opt")
 
@@ -27,6 +41,8 @@ if __name__ == '__main__':
             line_count = 1
             with open(inp_name, 'w') as inp_file:
                 print(keywords, file=inp_file)
+                if args.atoms:
+                    print(geom_block, file=inp_file)
                 print("", file=inp_file)
                 print("*xyz 0 1", file=inp_file)
                 for line in xyz_file:
