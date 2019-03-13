@@ -11,15 +11,26 @@ KT_298_K = 0.592186673
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("filenames", action='store', help='.out file(s) to analyse', nargs="*")
-    parser.add_argument("-t", "--threshold", type=int, default=0, help="Finds conformers within X kcal/mol of the lowest energy conformer and prints them to a csv file.")
+    parser.add_argument("-t", "--threshold", type=int, default=0,
+                        help="Finds conformers within X kcal/mol of the lowest "
+                             "energy conformer and prints them to a csv file.")
     parser.add_argument("-c", "--csv", action='store_true', help='Output all conformers to a csv file.')
     parser.add_argument("-p", "--population", type=int, default=0,
-                        help="Calculates Boltzmann populations (assumes no degeneracy), selects the lowest-energy X% of conformers, prints numbers/populations to a csv file.")
+                        help="Calculates Boltzmann populations (assumes no degeneracy), "
+                             "selects the lowest-energy X% of conformers, prints numbers/populations to a csv file.")
+    parser.add_argument("--gibbs", action="store_true", help="Weight using Gibbs free energies.")
     return parser.parse_args()
 
 if __name__ == '__main__':
     args = get_args()
     threshold_kcal = args.threshold
+
+    if args.gibbs:
+        energy_string = "Final Gibbs free enthalpy"
+        energy_index = -2
+    else:
+        energy_string = "FINAL SINGLE POINT ENERGY"
+        energy_index = -1
 
     conformer_numbers = []
     conformer_energies = []
@@ -74,8 +85,8 @@ if __name__ == '__main__':
                     if "MULTIPLE XYZ STEP" in line:
                         conformer_number = conformer_number + 1
                         conformer_numbers.append(conformer_number)
-                    if "FINAL SINGLE POINT ENERGY" in line:
-                        conformer_energies.append(float(line.split()[-1]))
+                    if energy_string in line:
+                        conformer_energies.append(float(line.split()[energy_index]))
 
             all_conformers = pd.DataFrame({'num': conformer_numbers, 'energy': conformer_energies})
             all_conformers['energy'] = (all_conformers['energy'] - all_conformers['energy'].min()) * HARTREE_TO_KCAL
@@ -92,8 +103,8 @@ if __name__ == '__main__':
                         converged = False
                         conformer_number = conformer_number + 1
                         conformer_numbers.append(conformer_number)
-                    if converged and "FINAL SINGLE POINT ENERGY" in line:
-                        conformer_energies.append(float(line.split()[-1]))
+                    if converged and energy_string in line:
+                        conformer_energies.append(float(line.split()[energy_index]))
 
             all_conformers = pd.DataFrame({'num': conformer_numbers, 'energy': conformer_energies})
             all_conformers['energy'] = (all_conformers['energy'] - all_conformers['energy'].min()) * HARTREE_TO_KCAL
@@ -120,8 +131,8 @@ if __name__ == '__main__':
                     for line in opt_output_file:
                         if "FINAL ENERGY EVALUATION AT THE STATIONARY POINT" in line:
                             converged = True
-                        if converged and "FINAL SINGLE POINT ENERGY" in line:
-                            conformer_energies.append(float(line.split()[-1]))
+                        if converged and energy_string in line:
+                            conformer_energies.append(float(line.split()[energy_index]))
                             break
             all_conformers = pd.DataFrame({'num': conformer_numbers, 'energy': conformer_energies})
             all_conformers['energy'] = (all_conformers['energy'] - all_conformers['energy'].min()) * HARTREE_TO_KCAL
@@ -132,8 +143,8 @@ if __name__ == '__main__':
                 with open(file, 'r') as sp_output_file:
                     conformer_numbers.append(int(file.split(".")[-2].split("_")[1])) # gets number from file name
                     for line in sp_output_file:
-                        if "FINAL SINGLE POINT ENERGY" in line:
-                            conformer_energies.append(float(line.split()[-1]))
+                        if energy_string in line:
+                            conformer_energies.append(float(line.split()[energy_index]))
             all_conformers = pd.DataFrame({'num': conformer_numbers, 'energy': conformer_energies})
             all_conformers['energy'] = (all_conformers['energy'] - all_conformers['energy'].min()) * HARTREE_TO_KCAL
             all_conformers = all_conformers.sort_values('num')
