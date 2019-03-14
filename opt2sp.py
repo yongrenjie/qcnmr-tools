@@ -2,7 +2,7 @@
 
 # Navigate to the folder in which the optimised .xyz files are in. These should be named tpss_svp_opt_<confno>.xyz
 # (or something similar). Then run:
-#    opt_to_sp.py opt_filtered_conformers.csv
+#    opt2sp.py opt_filtered_conformers.csv
 # where opt_filtered_conformers.csv is the csv file containing the conformers below the energy cutoff (3 kcal/mol).
 # The script then generates all required input files for the next step (single points at TPSS/def2-TZVPP), which can
 # then be copied to a directory of your choice.

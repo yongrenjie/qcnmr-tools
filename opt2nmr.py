@@ -2,7 +2,7 @@
 
 # Navigate to the folder in which the optimised .xyz files are in. These should be named tpss_svp_opt_<confno>.xyz
 # (or something similar). Then run:
-#    opt_to_nmr.py nmr_filtered_conformers.csv
+#    opt2nmr.py nmr_filtered_conformers.csv
 # where nmr_filtered_conformers.csv is the csv file containing conformers for NMR calculations.
 # The script then generates all required input files for the shielding and coupling calculations in
 # separate directories.

@@ -7,7 +7,7 @@ Without -a, the script can be used to output csv files for NMR calculations on d
 numbers of atoms, atom labels, etc. This was useful e.g. when finding the linear scaling factors.
 
 When calling -a, the script automatically reads in the renormalised population of each conformer. This information
-is placed into the nmr input files automatically by opt_to_nmr.py as a comment. The ORCA .out file therefore also
+is placed into the nmr input files automatically by opt2nmr.py as a comment. The ORCA .out file therefore also
 contains the information, since the input file is automatically printed near the top of the .out file.
 Then, it automatically averages the couplings.
 '''
