@@ -5,7 +5,7 @@ import argparse
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("filename", action='store', help='.xyz file(s) to convert and submit')
+    parser.add_argument("filenames", action='store', help='.xyz file(s) to convert and submit', nargs="*")
     return parser.parse_args()
 
 def print_bash_script(xyz_filename):
@@ -58,8 +58,8 @@ def xyz_to_coord(xyz_filename):
 
 if __name__ == '__main__':
     args = get_args()
-    xyzfile = args.filename
-    xyz_to_coord(xyzfile)
-    sh_filename = print_bash_script(xyzfile)
-    qsub_bash_script(sh_filename)
+    for file in args.filenames:
+        xyz_to_coord(file)
+        sh_filename = print_bash_script(file)
+        qsub_bash_script(sh_filename)
 
