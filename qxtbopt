@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+
+import os
+import argparse
+
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("filename", action='store', help='.xyz file(s) to convert and submit')
+    return parser.parse_args()
+
+def print_bash_script(xyz_filename):
+    args = get_args()
+    base_name = xyz_filename.rstrip('.xyz')
+    sh_filename = str(xyz_filename.replace('.xyz', '.sh'))
+    with open(sh_filename, 'w') as bash_script:
+        print('#!/bin/bash', file=bash_script)
+        print('#', file=bash_script)
+        print('#$ -cwd', file=bash_script)
+        print('#', file=bash_script)
+        print('#$ -pe smp 4', file=bash_script)
+        print('#$ -l s_rt=360:00:00', file=bash_script)
+        print('#', file=bash_script)
+        print('module load mpi/openmpi3-x86_64', file=bash_script)
+        print('export ORIG=$PWD', file=bash_script)
+        print('export SCR=$TMPDIR', file=bash_script)
+        print('mkdir -p $SCR', file=bash_script)
+        print('cp {}.coord $SCR'.format(base_name), file=bash_script)
+        print('#', file=bash_script)
+        print('cd $SCR', file=bash_script)
+
+        xtb_command = "xtb {}.coord -namespace {} -o loose -P 4 -g methanol > $ORIG/{}_xtbopt.out".format(base_name, base_name, base_name)
+        print(xtb_command, file=bash_script)
+        print('rm -f *.tmp', file=bash_script)
+        print('cp -R * $ORIG', file=bash_script)
+        print('cd /', file=bash_script)
+        print('rm -Rf $SCR', file=bash_script)
+        return sh_filename
+
+def qsub_bash_script(sh_filename):
+    os.system('qsub ' + sh_filename)
+
+def xyz_to_coord(xyz_filename):
+    ANG_TO_BOHR = 1.8897261
+    xyz_file = open(xyz_filename, 'r')
+    base_name = xyz_filename.rstrip('.xyz')
+    line_number = 0
+    with open('{}.coord'.format(base_name), 'w') as coord_file:
+        print("$coord", file=coord_file)
+        for line in xyz_file:
+            line_number = line_number + 1
+            if line_number >= 3:
+                [atom, x_ang, y_ang, z_ang] = line.split()
+                x_bohr = float(x_ang) * ANG_TO_BOHR
+                y_bohr = float(y_ang) * ANG_TO_BOHR
+                z_bohr = float(z_ang) * ANG_TO_BOHR
+                print(" {:9.5f}{:13.5f}{:13.5f}    {}".format(x_bohr, y_bohr, z_bohr, atom), file=coord_file)
+        print("$end", file=coord_file)
+
+if __name__ == '__main__':
+    args = get_args()
+    xyzfile = args.filename
+    xyz_to_coord(xyzfile)
+    sh_filename = print_bash_script(xyzfile)
+    qsub_bash_script(sh_filename)
+
