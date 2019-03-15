@@ -14,7 +14,7 @@ def get_args():
 
 def print_bash_script(xyz_filename):
     args = get_args()
-    base_name = xyz_filename.rstrip('.xyz')
+    base_name = xyz_filename.replace(".xyz", "")
     sh_filename = str(xyz_filename.replace('.xyz', '.sh'))
     with open(sh_filename, 'w') as bash_script:
         print('#!/bin/bash', file=bash_script)

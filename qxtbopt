@@ -10,7 +10,7 @@ def get_args():
 
 def print_bash_script(xyz_filename):
     # args = get_args()   # Don't need this yet...
-    base_name = xyz_filename.rstrip('.xyz')
+    base_name = xyz_filename.replace(".xyz", "")
     sh_filename = str(xyz_filename.replace('.xyz', '.sh'))
     with open(sh_filename, 'w') as bash_script:
         print('#!/bin/bash', file=bash_script)
@@ -42,7 +42,7 @@ def qsub_bash_script(sh_filename):
 def xyz_to_coord(xyz_filename):
     ANG_TO_BOHR = 1.8897261
     xyz_file = open(xyz_filename, 'r')
-    base_name = xyz_filename.rstrip('.xyz')
+    base_name = xyz_filename.replace(".xyz", "")
     line_number = 0
     with open('{}.coord'.format(base_name), 'w') as coord_file:
         print("$coord", file=coord_file)

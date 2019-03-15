@@ -77,6 +77,6 @@ if __name__ == '__main__':
     if args.diagonal:
         ax.plot([0, max(np.amax(earlier_energies), np.amax(later_energies))], [0, max(np.amax(earlier_energies), np.amax(later_energies))], linewidth=0.9,  color='orange')
 
-    plt.xlabel(args.earlier_csv.rstrip(".csv") + " energy (kcal/mol)")
-    plt.ylabel(args.later_csv.rstrip(".csv") + " energy (kcal/mol)")
+    plt.xlabel(args.earlier_csv.replace(".csv", "") + " energy (kcal/mol)")
+    plt.ylabel(args.later_csv.replace(".csv", "") + " energy (kcal/mol)")
     plt.show()
