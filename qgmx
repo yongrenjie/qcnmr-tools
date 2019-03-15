@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+
+import os
+import argparse
+
+
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("filenames", action='store', help='.tpr file(s) to run', nargs="*")
+    parser.add_argument("-np", "--nprocs", type=int, action='store', default=16, help="Number of cores")
+    return parser.parse_args()
+
+
+def print_gmx_script(tpr_filename):
+    args = get_args()
+    base_name = tpr_filename.replace(".tpr", "")
+    sh_filename = str(tpr_filename.replace('.tpr', '.sh'))
+    with open(sh_filename, 'w') as bash_script:
+        print("#!/bin/bash", file=bash_script)
+        print("#", file=bash_script)
+        print("#$ -cwd", file=bash_script)
+        print("#", file=bash_script)
+        print("#$ -pe smp {}".format(args.nprocs), file=bash_script)
+        print("#$ -l s_rt=240:00:00", file=bash_script)
+        print("#", file=bash_script)
+        print("/opt/openmpi2/bin/mpirun -np {} /u/fd/ball4935/opt/gromacs2016/bin/gmx_mpi mdrun -v -deffnm {}".format(
+            args.nprocs, base_name), file=bash_script)
+    return sh_filename
+
+
+def qsub_bash_script(sh):
+    os.system('qsub ' + sh)
+
+
+if __name__ == '__main__':
+    args = get_args()
+    for file in args.filenames:
+        sh_filename = print_gmx_script(file)
+        qsub_bash_script(sh_filename)
