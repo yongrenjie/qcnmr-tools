@@ -5,8 +5,8 @@ import argparse
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-f", "--filename", help='File containing clustered conformers (default clusters_try.pdb)',
-                        default="clusters_try.pdb")
+    parser.add_argument("-f", "--filename", help='File containing clustered conformers (default clusters.pdb)',
+                        default="clusters.pdb")
     parser.add_argument("--minsize", help="Minimum size of cluster (i.e. number of conformations in cluster)"
                                           " to output an xyz file for", type=int, default=1)
     parser.add_argument("--explicit", action="store_true", help="Save xyz files including MeOH within 3.5 Ang of lig")
