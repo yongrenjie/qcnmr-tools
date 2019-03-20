@@ -1,0 +1,112 @@
+#!/usr/bin/env python3
+
+import os
+import argparse
+
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("filename", action='store', help='.xyz file(s) to convert and submit')
+    parser.add_argument("-s", "--solv", action="store", help="Specify solvent to be used (GBSA) (default gas phase)")
+    parser.add_argument("-T", "--threads", type=int, default=4, help="Specify number of threads to use (default 4)")
+    parser.add_argument("-c", "--cutoff", type=int, help="Specify energy threshold to use (default 6)")
+    parser.add_argument("-t", "--time", type=int, help="Specify length of MTD/MD runs (in ps)")
+    parser.add_argument("-C", "--charge", type=int, help="Specify charge (default 0)")
+    parser.add_argument("-a", "--atoms", type=int, nargs="*", help="Atoms to constrain (separate by spaces)")
+    return parser.parse_args()
+
+def print_bash_script(xyz_filename):
+    args = get_args()
+    base_name = xyz_filename.replace(".xyz", "")
+    sh_filename = str(xyz_filename.replace('.xyz', '.sh'))
+    with open(sh_filename, 'w') as bash_script:
+        print('#!/bin/bash', file=bash_script)
+        print('#', file=bash_script)
+        print('#$ -cwd', file=bash_script)
+        print('#', file=bash_script)
+        print('#$ -pe smp {}'.format(args.threads), file=bash_script)
+        print('#$ -l s_rt=360:00:00', file=bash_script)
+        print('#', file=bash_script)
+        print('module load mpi/openmpi3-x86_64', file=bash_script)
+        print('export ORIG=$PWD', file=bash_script)
+        print('export SCR=$TMPDIR', file=bash_script)
+        print('mkdir -p $SCR', file=bash_script)
+        print('cp coord coord.original .constrains $SCR', file=bash_script)
+        print('#', file=bash_script)
+        print('cd $SCR', file=bash_script)
+        crest_command = "crest_2.6 -nmr "
+        if args.solv:
+            crest_command = crest_command + "-g {} ".format(args.solv)
+        if args.threads:
+            crest_command = crest_command + "-T {} ".format(args.threads)
+        if args.cutoff:
+            crest_command = crest_command + "-ewin {} ".format(args.cutoff)
+        if args.time:
+            crest_command = crest_command + "-len {} ".format(args.time)
+        if args.charge:
+            crest_command = crest_command + "-chrg {} ".format(args.charge)
+        print('{} > $ORIG/{}_crest.out'.format(crest_command, base_name), file=bash_script)
+        print('rm -f *.tmp', file=bash_script)
+        print('cp -R * $ORIG', file=bash_script)
+        print('cd /', file=bash_script)
+        print('rm -Rf $SCR', file=bash_script)
+        return sh_filename
+
+def qsub_bash_script(sh_filename):
+    os.system('qsub ' + sh_filename)
+
+def xyz_to_coord(xyz_filename):
+    args = get_args()
+
+    # determine total number of atoms
+    test_file = open(xyz_filename, 'r')
+    total_atoms = int(test_file.readline().strip())
+    test_file.close()
+
+    constrained_atom_string = ""
+    for i in args.atoms:
+        constrained_atom_string = constrained_atom_string + str(i) + ","
+    constrained_atom_string = constrained_atom_string[:-1]
+
+    unconstrained_atom_string = ""
+    for i in range(total_atoms):
+        j = i + 1
+        if not j in args.atoms:
+            unconstrained_atom_string = unconstrained_atom_string + str(j) + ","
+    unconstrained_atom_string = unconstrained_atom_string[:-1]
+
+    ANG_TO_BOHR = 1.8897261
+    xyz_file = open(xyz_filename, 'r')
+    line_number = 0
+    with open('coord', 'w') as coord_file:
+        print("$coord", file=coord_file)
+        for line in xyz_file:
+            line_number = line_number + 1
+            if line_number >= 3 and line.split():  # line.split() evaluates to False for whitespace-only lines
+                [atom, x_ang, y_ang, z_ang] = line.split()
+                x_bohr = float(x_ang) * ANG_TO_BOHR
+                y_bohr = float(y_ang) * ANG_TO_BOHR
+                z_bohr = float(z_ang) * ANG_TO_BOHR
+                print(" {:9.5f}{:13.5f}{:13.5f}    {}".format(x_bohr, y_bohr, z_bohr, atom), file=coord_file)
+        print("$end", file=coord_file)
+        print("$fix", file=coord_file)
+        print("  atoms: {}".format(constrained_atom_string), file=coord_file)
+        print("  shake: {}".format(constrained_atom_string), file=coord_file)
+        print("  optlevel=vtight", file=coord_file)
+        print("$end", file=coord_file)
+    os.system("cp coord coord.original")
+    with open('.constrains', 'w') as constrains_file:
+        print("$constrain", file=constrains_file)
+        print("  atoms: {}".format(constrained_atom_string), file=constrains_file)
+        print("  force constant=0.5", file=constrains_file)
+        print("  reference=coord.original", file=constrains_file)
+        print("$metadyn", file=constrains_file)
+        print("  atoms: {}".format(unconstrained_atom_string), file=constrains_file)
+        print("$end", file=constrains_file)
+
+if __name__ == '__main__':
+    args = get_args()
+    xyzfile = args.filename
+    xyz_to_coord(xyzfile)
+    sh_filename = print_bash_script(xyzfile)
+    qsub_bash_script(sh_filename)
+
