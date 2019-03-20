@@ -10,6 +10,7 @@ def get_args():
     parser.add_argument("-T", "--threads", type=int, default=4, help="Specify number of threads to use (default 4)")
     parser.add_argument("-c", "--cutoff", type=int, help="Specify energy threshold to use (default 6)")
     parser.add_argument("-t", "--time", type=int, help="Specify length of MTD/MD runs (in ps)")
+    parser.add_argument("-C", "--charge", type=int, help="Specify charge (default 0)")
     return parser.parse_args()
 
 def print_bash_script(xyz_filename):
@@ -40,6 +41,8 @@ def print_bash_script(xyz_filename):
             crest_command = crest_command + "-ewin {} ".format(args.cutoff)
         if args.time:
             crest_command = crest_command + "-len {} ".format(args.time)
+        if args.charge:
+            crest_command = crest_command + "-chrg {} ".format(args.charge)
         print('{} > $ORIG/{}_crest.out'.format(crest_command, base_name), file=bash_script)
         print('rm -f *.tmp', file=bash_script)
         print('cp -R * $ORIG', file=bash_script)
@@ -58,7 +61,7 @@ def xyz_to_coord(xyz_filename):
         print("$coord", file=coord_file)
         for line in xyz_file:
             line_number = line_number + 1
-            if line_number >= 3:
+            if line_number >= 3 and line.split():
                 [atom, x_ang, y_ang, z_ang] = line.split()
                 x_bohr = float(x_ang) * ANG_TO_BOHR
                 y_bohr = float(y_ang) * ANG_TO_BOHR
