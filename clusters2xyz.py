@@ -8,7 +8,7 @@ def get_args():
     parser.add_argument("-f", "--filename", help='File containing clustered conformers (default clusters.pdb)',
                         default="clusters.pdb")
     parser.add_argument("--minsize", help="Minimum size of cluster (i.e. number of conformations in cluster)"
-                                          " to output an xyz file for", type=int, default=1)
+                                          " to output an xyz file for", type=int, default=2)
     parser.add_argument("--explicit", action="store_true", help="Save xyz files including MeOH within 3.5 Ang of lig")
     return parser.parse_args()
 
@@ -20,7 +20,7 @@ def count_clusters(log_file, threshold):
     with open(log_file, "r") as file:
         for line in file:
             if len(line.split()) >= 3:
-                if line.split()[0].isdigit() and int(line.split()[2]) > threshold:
+                if line.split()[0].isdigit() and int(line.split()[2]) >= threshold:
                     total_clusters_above_threshold = int(line.split()[0])
     return total_clusters_above_threshold
 
