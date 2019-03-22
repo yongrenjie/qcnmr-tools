@@ -131,9 +131,9 @@ if __name__ == '__main__':
     print("=================")
     print(expt_df)
 
-    number_of_isomers = len(calc_df.columns) - 2   # 2
+    number_of_isomers = len(calc_df.columns) - 2
 
-    for m in range(number_of_isomers):      # 0, 1
+    for m in range(number_of_isomers):
         for n in range(number_of_isomers):
             if n > m:
                 # Runs CP3 analysis for all pairs of columns in calculated/experimental data
