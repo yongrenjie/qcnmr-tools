@@ -35,7 +35,6 @@ def calculate_cp3_value(calc_a, calc_b, expt_a, expt_b):
 def cp3(atoms, calc_a, calc_b, expt_a, expt_b):
     print()
     print("==================================================")
-    print("ASSIGNMENT: ({}, {}) -> ({}, {})".format(expt_a.name, expt_b.name, calc_a.name, calc_b.name))
     print()
     # calculate CP3 for assignment A (first calc column = first expt column)
     cp3_A = calculate_cp3_value(calc_a, calc_b, expt_a, expt_b)
@@ -52,9 +51,21 @@ def cp3(atoms, calc_a, calc_b, expt_a, expt_b):
                     min(normal_cdf(cp3_B, COMBINED_CORRECT_MEAN, COMBINED_CORRECT_SD),
                         1 - normal_cdf(cp3_B, COMBINED_CORRECT_MEAN, COMBINED_CORRECT_SD))
     # calculate probability of assignments A or B being correct given the CP3 values
-    p_A_given_CP3 = p_cp3_given_A / (p_cp3_given_A + p_cp3_given_B)
-    p_B_given_CP3 = p_cp3_given_B / (p_cp3_given_A + p_cp3_given_B)
-    return [p_A_given_CP3, p_B_given_CP3]
+    p_A_given_cp3 = p_cp3_given_A / (p_cp3_given_A + p_cp3_given_B)
+    p_B_given_cp3 = p_cp3_given_B / (p_cp3_given_A + p_cp3_given_B)
+
+    # print formatted output
+    print("ASSIGNMENT A: ({}, {}) -> ({}, {})".format(expt_a.name, expt_b.name, calc_a.name, calc_b.name))
+    print("CP3 value (combined): {}".format(cp3_A))
+    print("P(CP3|A): {}".format(p_cp3_given_A))
+    print("P(A|CP3): {}".format(p_A_given_cp3))
+    print()
+    print("ASSIGNMENT B: ({}, {}) -> ({}, {})".format(expt_b.name, expt_a.name, calc_a.name, calc_b.name))
+    print("CP3 value (combined): {}".format(cp3_B))
+    print("P(CP3|B): {}".format(p_cp3_given_B))
+    print("P(B|CP3): {}".format(p_B_given_cp3))
+
+    return 0
 
 
 def parse_data(filename):
@@ -75,9 +86,6 @@ def parse_data(filename):
 
 
 if __name__ == '__main__':
-    print()
-    print("PLEASE CITE: Smith, S. G.; Goodman, J. M. J. Org. Chem. 2009, 74 (12), 4597–4607.")
-    print()
 
     calc_df = parse_data("calc.txt")
     expt_df = parse_data("expt.txt")
@@ -97,7 +105,10 @@ if __name__ == '__main__':
     for i in range(number_of_isomers): # 0, 1
         for j in range(number_of_isomers):
             if j > i:
-                print(cp3(calc_df['atom'], calc_df.iloc[:, i + 2], calc_df.iloc[:, j + 2],
-                    expt_df.iloc[:, i + 2], expt_df.iloc[:, j + 2]))
+                # Runs CP3 analysis for all pairs of columns in calculated/experimental data
+                cp3(calc_df['atom'], calc_df.iloc[:, i + 2], calc_df.iloc[:, j + 2],
+                    expt_df.iloc[:, i + 2], expt_df.iloc[:, j + 2])
 
+    print()
+    print("Please cite: Smith, S. G.; Goodman, J. M. J. Org. Chem. 2009, 74 (12), 4597–4607.")
 
