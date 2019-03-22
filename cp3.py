@@ -54,16 +54,23 @@ def cp3(atoms, calc_a, calc_b, expt_a, expt_b):
     p_A_given_cp3 = p_cp3_given_A / (p_cp3_given_A + p_cp3_given_B)
     p_B_given_cp3 = p_cp3_given_B / (p_cp3_given_A + p_cp3_given_B)
 
+    #TODO: Add 13C and 1H analysis
+
     # print formatted output
     print("ASSIGNMENT A: ({}, {}) -> ({}, {})".format(expt_a.name, expt_b.name, calc_a.name, calc_b.name))
-    print("CP3 value (combined): {}".format(cp3_A))
-    print("P(CP3|A): {}".format(p_cp3_given_A))
-    print("P(A|CP3): {}".format(p_A_given_cp3))
-    print()
     print("ASSIGNMENT B: ({}, {}) -> ({}, {})".format(expt_b.name, expt_a.name, calc_a.name, calc_b.name))
-    print("CP3 value (combined): {}".format(cp3_B))
-    print("P(CP3|B): {}".format(p_cp3_given_B))
-    print("P(B|CP3): {}".format(p_B_given_cp3))
+    print()
+
+    print("-------------------      -------------------      -------------------")
+    print("Combined 13C and 1H      13C only                 1H only")
+    print("-------------------      -------------------      -------------------")
+    print("CP3(A)  : {:9.6f}      CP3(A)  : {:9.6f}      CP3(A)  : {:9.6f}".format(cp3_A, cp3_A, cp3_A))
+    print("P(CP3|A): {:9.6f}      P(CP3|A): {:9.6f}      P(CP3|A): {:9.6f}".format(p_cp3_given_A, p_cp3_given_A, p_cp3_given_A))
+    print("CP3(B)  : {:9.6f}      CP3(B)  : {:9.6f}      CP3(B)  : {:9.6f}".format(cp3_B, cp3_B, cp3_B))
+    print("P(CP3|B): {:9.6f}      P(CP3|B): {:9.6f}      P(CP3|B): {:9.6f}".format(p_cp3_given_B, p_cp3_given_B, p_cp3_given_B))
+    print()
+    print("P(A|CP3): {:9.6f}      P(A|CP3): {:9.6f}      P(A|CP3): {:9.6f}".format(p_A_given_cp3, p_A_given_cp3, p_A_given_cp3))
+    print("P(B|CP3): {:9.6f}      P(B|CP3): {:9.6f}      P(B|CP3): {:9.6f}".format(p_B_given_cp3, p_B_given_cp3, p_B_given_cp3))
 
     return 0
 
