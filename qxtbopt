@@ -48,7 +48,7 @@ def xyz_to_coord(xyz_filename):
         print("$coord", file=coord_file)
         for line in xyz_file:
             line_number = line_number + 1
-            if line_number >= 3:
+            if line_number >= 3 and line.split():  # line.split() evaluates to False for whitespace-only lines
                 [atom, x_ang, y_ang, z_ang] = line.split()
                 x_bohr = float(x_ang) * ANG_TO_BOHR
                 y_bohr = float(y_ang) * ANG_TO_BOHR
