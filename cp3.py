@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # This script performs CP3 analysis as described in Smith & Goodman, J. Org. Chem. 2009, 74 (12), 4597–4607.
 #
 # The script requires two text files: calc.txt (containing the calculated shifts) and expt.txt (experimental shifts).
@@ -38,9 +40,6 @@
 #
 # The mean and standard deviations for CP3 distributions are obtained unchanged from the SI of Goodman's paper. Please
 # note that in theory, these numbers are sensitive to the method used and the training set.
-
-
-#!/usr/bin/env python3
 
 import pandas as pd
 import math
