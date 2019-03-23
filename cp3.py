@@ -80,7 +80,7 @@ def calculate_cp3_value(calc_a, calc_b, expt_a, expt_b):
     Delta_c = calc_a - calc_b
     Delta_e = expt_a - expt_b
 
-    Dc_divide_De = pd.Series(Delta_c / Delta_e > 1)     # logical array
+    Dc_divide_De = (Delta_c / Delta_e > 1)     # logical array
     sum_f3 = ((((Delta_e ** 3) / Delta_c) * Dc_divide_De) + ((Delta_e * Delta_c) * (1 - Dc_divide_De))).sum()
     sum_DeSquared = (Delta_e ** 2).sum()
     cp3 = sum_f3 / sum_DeSquared
