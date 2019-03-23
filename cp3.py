@@ -61,10 +61,12 @@ def error_quit(error_message):
     return 0
 
 
-# def normal_cdf(x, mean, sd):
-    # return (1.0 + math.erf((x - mean)/(sd * math.sqrt(2))))/2
+"""
+def normal_cdf(x, mean, sd):
+    return (1.0 + math.erf((x - mean)/(sd * math.sqrt(2))))/2
     # This turns very small numbers into zero, which can lead to some ZeroDivisionError.
     # e.g. normal_cdf(-10, 0, 0.5) returns 0.0, but scipy.stats.norm.cdf(-10, 0, 0.5) returns 2.7536241186061556e-89
+"""
 
 
 def fmt_float(fl):
@@ -111,7 +113,7 @@ def cp3(atoms, calc_a, calc_b, expt_a, expt_b):
                                    expt_b * h1_logical_array, expt_a * h1_logical_array)
 
     print()
-    print("=====================================================================")
+    print("========================================================================")
     print()
     for i in range(3):      # i = 0 is combined; i = 1 is 13C; i = 2 is 1H
         # calculate probability of obtaining CP3 values given that assignment A is correct
@@ -217,7 +219,7 @@ if __name__ == '__main__':
                     expt_df.iloc[:, m + 2], expt_df.iloc[:, n + 2])
 
     print()
-    print("=====================================================================")
+    print("========================================================================")
     print()
     print("Please cite: Smith, S. G.; Goodman, J. M. J. Org. Chem. 2009, 74 (12), 4597–4607.")
 
