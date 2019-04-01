@@ -143,14 +143,17 @@ def dp4(atoms, expt, calc_df):
         p_isomer_given_c_shifts.append(product_probs_c[k] / sum(product_probs_c))
         p_isomer_given_h_shifts.append(product_probs_h[k] / sum(product_probs_h))
         p_isomer_given_combined_shifts.append(product_probs_combined[k] / sum(product_probs_combined))
+
         # generate strings for nice tabular output
         # string containing all names of calculated isomers
         calc_name_str = calc_name_str + fmt_string(calc_df.iloc[:, k + 2].name, output_precision + 1) + " "
+
         # strings containing all products of probabilities
         product_probs_combined_str = product_probs_combined_str \
                                      + fmt_float(product_probs_combined[k], output_precision) + "  "
         product_probs_c_str = product_probs_c_str + fmt_float(product_probs_c[k], output_precision) + "  "
         product_probs_h_str = product_probs_h_str + fmt_float(product_probs_h[k], output_precision) + "  "
+
         # strings containing Bayes theorem probabilities for each isomer
         p_combined_str = p_combined_str + fmt_float(p_isomer_given_combined_shifts[k], output_precision) + "  "
         p_c_str = p_c_str + fmt_float(p_isomer_given_c_shifts[k], output_precision) + "  "
