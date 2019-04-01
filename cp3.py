@@ -70,13 +70,11 @@ def normal_cdf(x, mean, sd):
 
 def fmt_float(fl, desired_length):
     # Trims a float to a certain length and displays it in scientific notation if it's tiny.
-    # this returns a string, not a float!
-    # 4 is the number of characters needed for "e-xx" at the end of a scientific number
-    # unless it is SUPER tiny, but let's not worry about that here......
-    if -(1 / 10 ** (desired_length - 4)) < fl < (1 / 10 ** (desired_length - 4)) and fl != 0:
-        return "{:{}.2e}".format(fl, desired_length)
+    # This returns a string, not a float!
+    if -0.0001 < fl < 0.0001 and fl != 0:
+        return "{:{}.{}e}".format(fl, desired_length, desired_length - 8)
     else:
-        return "{:{}.6f}".format(fl, desired_length)
+        return "{:{}.{}f}".format(fl, desired_length, desired_length - 4)
 
 
 def calculate_cp3_value(calc_a, calc_b, expt_a, expt_b):
