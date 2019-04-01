@@ -1,7 +1,20 @@
 #!/usr/bin/env python3
 
 import pandas as pd
-import random
+import argparse
+from scipy import stats
+
+# define degrees of freedom and standard deviations for t-distributions, as reported in main text of paper
+DF_1H = 14.18
+SD_1H = 0.185
+DF_13C = 11.38
+SD_13C = 2.306
+
+
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-v", "--verbose", action="store_true", help="Print verbose output")
+    return parser.parse_args()
 
 
 def error_quit(error_message):
@@ -12,27 +25,94 @@ def error_quit(error_message):
     return 0
 
 
-def calculate_dp4_probability(expt, calc):
-    return random.randint(1,10000)/10000      # something needs to change here...
+def fmt_float(fl):
+    if -0.000001 < fl < 0.000001 and fl != 0:
+        return "{:10.2e}".format(fl)
+    else:
+        return "{:10.6f}".format(fl)
 
 
-def dp4(expt, calc_df):
+def calculate_dp4_probability(atoms, expt, calc):
+    """
+    Returns the product of probabilities of observing the errors in chemical shifts, i.e. P of getting the calculated
+    shifts given the experimental shifts, or P(DP4|A) where A is a specific assignment.
+    More precisely, this returns a list of the 13C, 1H, and combined DP4 probabilities, in that order.
+    """
+
+    # generate sub-series for 13C and 1H chemical shifts from the overall series
+    carbons = []
+    hydrogens = []
+    for index, atom in atoms.iteritems():
+        if atom == "C" or index == "c":
+            carbons.append(index)
+        elif atom == "H" or index == "h":
+            hydrogens.append(index)
+    expt_c = expt[carbons]
+    expt_h = expt[hydrogens]
+    calc_c = calc[carbons]
+    calc_h = calc[hydrogens]
+
+    # perform empirical scaling of shifts. Calculated shifts are y-axis (slightly counterintuitive)
+    c_slope, c_intercept, x4, x5, x6 = stats.linregress(expt_c, calc_c)
+    h_slope, h_intercept, x7, x8, x9 = stats.linregress(expt_h, calc_h)
+    scaled_calc_c = (calc_c - c_intercept)/c_slope
+    scaled_calc_c.name = "scaled_calc_c"
+    scaled_calc_h = (calc_h - h_intercept)/h_slope
+    scaled_calc_h.name = "scaled_calc_h"
+
+    # calculate errors
+    c_errors = abs(expt_c - scaled_calc_c)
+    c_errors.name = "c_errors"
+    h_errors = abs(expt_h - scaled_calc_h)
+    h_errors.name = "h_errors"
+
+    # calculate probabilities
+    c_probs = 1 - stats.t.cdf(c_errors, DF_13C, loc=0, scale=SD_13C)
+    h_probs = 1 - stats.t.cdf(h_errors, DF_1H, loc=0, scale=SD_1H)
+    total_c_prob = c_probs.prod()
+    total_h_prob = h_probs.prod()
+    total_combined_prob = total_c_prob * total_h_prob
+
+    return [total_c_prob, total_h_prob, total_combined_prob]
+
+
+def dp4(atoms, expt, calc_df):
+    args = get_args()
 
     number_of_isomers = len(calc_df.columns) - 2
-    p_dp4_given_isomer = []
-    p_isomer_given_dp4 = []
+    p_c_dp4_given_isomer = []
+    p_h_dp4_given_isomer = []
+    p_combined_dp4_given_isomer = []
+    p_isomer_given_c_dp4 = []
+    p_isomer_given_h_dp4 = []
+    p_isomer_given_combined_dp4 = []
 
     print()
-    print("DP4 analysis for {}".format(expt.name))
+    print("======================================")
+    print("DP4 ANALYSIS FOR {}".format(expt.name))
+    print("======================================")
+    print()
 
+    # calculate P(DP4|isomer)
     for j in range(number_of_isomers):
-        print("comparing {} against {}...".format(expt.name, calc_df.iloc[:, j + 2].name))
-        p_dp4_given_isomer.append(calculate_dp4_probability(expt.name, calc_df.iloc[:, j + 2].name))
+        c_prob, h_prob, combined_prob = calculate_dp4_probability(atoms, expt, calc_df.iloc[:, j + 2])
+        p_c_dp4_given_isomer.append(c_prob)
+        p_h_dp4_given_isomer.append(h_prob)
+        p_combined_dp4_given_isomer.append(combined_prob)
 
     # convert to P(isomer|DP4)
     for k in range(number_of_isomers):
-        p_isomer_given_dp4.append(p_dp4_given_isomer[k] / sum(p_dp4_given_isomer))
-        print("P({} ==> {}): {}".format(expt.name, calc_df.iloc[:, k + 2].name, p_isomer_given_dp4[k]))
+        if args.verbose:
+            print("verbose output")
+        p_isomer_given_c_dp4.append(p_c_dp4_given_isomer[k] / sum(p_c_dp4_given_isomer))
+        p_isomer_given_h_dp4.append(p_h_dp4_given_isomer[k] / sum(p_h_dp4_given_isomer))
+        p_isomer_given_combined_dp4.append(p_combined_dp4_given_isomer[k] / sum(p_combined_dp4_given_isomer))
+        print("ASSIGNMENT {} : {} ==> {}".format(k + 1, expt.name, calc_df.iloc[:, k + 2].name))
+        print("------------------------------------")
+        print("13C     : {}".format(fmt_float(p_isomer_given_c_dp4[k])))
+        print("1H      : {}".format(fmt_float(p_isomer_given_h_dp4[k])))
+        print("Combined: {}".format(fmt_float(p_isomer_given_combined_dp4[k])))
+        print()
 
     return 0
 
@@ -89,7 +169,6 @@ if __name__ == '__main__':
             error_quit("Atom label {} in dp4_expt.txt does not begin with C/c/H/H.".format(expt_df['label'][i]))
 
     for i in range(len(expt_df.columns) - 2):
-        dp4(expt_df.iloc[:, i + 2], calc_df)
+        dp4(expt_df['atom'], expt_df.iloc[:, i + 2], calc_df)
 
-    print()
     print("Please cite: Smith, S. G.; Goodman, J. M. J. Am. Chem. Soc. 2010, 132 (37), 12946–12959.")
