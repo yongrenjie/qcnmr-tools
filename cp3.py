@@ -58,7 +58,6 @@ def error_quit(error_message):
     print("ERROR: {}".format(error_message))
     print("Exiting...")
     sys.exit()
-    return 0
 
 
 """
@@ -69,11 +68,15 @@ def normal_cdf(x, mean, sd):
 """
 
 
-def fmt_float(fl):
-    if -0.000001 < fl < 0.000001 and fl != 0:
-        return "{:10.2e}".format(fl)
+def fmt_float(fl, desired_length):
+    # Trims a float to a certain length and displays it in scientific notation if it's tiny.
+    # this returns a string, not a float!
+    # 4 is the number of characters needed for "e-xx" at the end of a scientific number
+    # unless it is SUPER tiny, but let's not worry about that here......
+    if -(1 / 10 ** (desired_length - 4)) < fl < (1 / 10 ** (desired_length - 4)) and fl != 0:
+        return "{:{}.2e}".format(fl, desired_length)
     else:
-        return "{:10.6f}".format(fl)
+        return "{:{}.6f}".format(fl, desired_length)
 
 
 def calculate_cp3_value(calc_a, calc_b, expt_a, expt_b):
@@ -138,26 +141,26 @@ def cp3(atoms, calc_a, calc_b, expt_a, expt_b):
     print("--------------------      --------------------      --------------------")
     print("Combined 13C and 1H       13C only                  1H only")
     print("--------------------      --------------------      --------------------")
-    print("CP3(A)  : {}      CP3(A)  : {}      CP3(A)  : {}".format(fmt_float(cp3_A[0]),
-                                                                    fmt_float(cp3_A[1]),
-                                                                    fmt_float(cp3_A[2])))
-    print("CP3(B)  : {}      CP3(B)  : {}      CP3(B)  : {}".format(fmt_float(cp3_B[0]),
-                                                                    fmt_float(cp3_B[1]),
-                                                                    fmt_float(cp3_B[2])))
+    print("CP3(A)  : {}      CP3(A)  : {}      CP3(A)  : {}".format(fmt_float(cp3_A[0], 10),
+                                                                    fmt_float(cp3_A[1], 10),
+                                                                    fmt_float(cp3_A[2], 10)))
+    print("CP3(B)  : {}      CP3(B)  : {}      CP3(B)  : {}".format(fmt_float(cp3_B[0], 10),
+                                                                    fmt_float(cp3_B[1], 10),
+                                                                    fmt_float(cp3_B[2], 10)))
     print()
-    print("P(CP3|A): {}      P(CP3|A): {}      P(CP3|A): {}".format(fmt_float(p_cp3_given_A[0]),
-                                                                    fmt_float(p_cp3_given_A[1]),
-                                                                    fmt_float(p_cp3_given_A[2])))
-    print("P(CP3|B): {}      P(CP3|B): {}      P(CP3|B): {}".format(fmt_float(p_cp3_given_B[0]),
-                                                                    fmt_float(p_cp3_given_B[1]),
-                                                                    fmt_float(p_cp3_given_B[2])))
+    print("P(CP3|A): {}      P(CP3|A): {}      P(CP3|A): {}".format(fmt_float(p_cp3_given_A[0], 10),
+                                                                    fmt_float(p_cp3_given_A[1], 10),
+                                                                    fmt_float(p_cp3_given_A[2], 10)))
+    print("P(CP3|B): {}      P(CP3|B): {}      P(CP3|B): {}".format(fmt_float(p_cp3_given_B[0], 10),
+                                                                    fmt_float(p_cp3_given_B[1], 10),
+                                                                    fmt_float(p_cp3_given_B[2], 10)))
     print()
-    print("P(A|CP3): {}      P(A|CP3): {}      P(A|CP3): {}".format(fmt_float(p_A_given_cp3[0]),
-                                                                    fmt_float(p_A_given_cp3[1]),
-                                                                    fmt_float(p_A_given_cp3[2])))
-    print("P(B|CP3): {}      P(B|CP3): {}      P(B|CP3): {}".format(fmt_float(p_B_given_cp3[0]),
-                                                                    fmt_float(p_B_given_cp3[1]),
-                                                                    fmt_float(p_B_given_cp3[2])))
+    print("P(A|CP3): {}      P(A|CP3): {}      P(A|CP3): {}".format(fmt_float(p_A_given_cp3[0], 10),
+                                                                    fmt_float(p_A_given_cp3[1], 10),
+                                                                    fmt_float(p_A_given_cp3[2], 10)))
+    print("P(B|CP3): {}      P(B|CP3): {}      P(B|CP3): {}".format(fmt_float(p_B_given_cp3[0], 10),
+                                                                    fmt_float(p_B_given_cp3[1], 10),
+                                                                    fmt_float(p_B_given_cp3[2], 10)))
     return 0
 
 
