@@ -80,9 +80,9 @@ def dp4(atoms, expt, calc_df):
     p_isomer_given_combined_dp4 = []
 
     print()
-    print("======================================")
-    print("DP4 ANALYSIS FOR {}".format(expt.name))
-    print("======================================")
+    print("==============================")
+    print("DP4 ANALYSIS: {}".format(expt.name))
+    print("==============================")
     print()
 
     # calculate P(DP4|isomer)
@@ -99,9 +99,9 @@ def dp4(atoms, expt, calc_df):
         p_isomer_given_combined_dp4.append(p_combined_dp4_given_isomer[k] / sum(p_combined_dp4_given_isomer))
         print("ASSIGNMENT {} : {} ==> {}".format(k + 1, expt.name, calc_df.iloc[:, k + 2].name))
         print("------------------------------------")
-        print("13C     : {}".format(fmt_float(p_isomer_given_c_dp4[k])))
-        print("1H      : {}".format(fmt_float(p_isomer_given_h_dp4[k])))
-        print("Combined: {}".format(fmt_float(p_isomer_given_combined_dp4[k])))
+        print("13C      : {}".format(fmt_float(p_isomer_given_c_dp4[k])))
+        print("1H       : {}".format(fmt_float(p_isomer_given_h_dp4[k])))
+        print("Combined : {}".format(fmt_float(p_isomer_given_combined_dp4[k])))
         print()
 
     return 0
