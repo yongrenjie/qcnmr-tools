@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import pandas as pd
-import argparse
 from scipy import stats
 
 # define degrees of freedom and standard deviations for t-distributions, as reported in main text of paper
@@ -9,12 +8,6 @@ DF_1H = 14.18
 SD_1H = 0.185
 DF_13C = 11.38
 SD_13C = 2.306
-
-
-def get_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-v", "--verbose", action="store_true", help="Print verbose output")
-    return parser.parse_args()
 
 
 def error_quit(error_message):
@@ -77,7 +70,6 @@ def calculate_dp4_probability(atoms, expt, calc):
 
 
 def dp4(atoms, expt, calc_df):
-    args = get_args()
 
     number_of_isomers = len(calc_df.columns) - 2
     p_c_dp4_given_isomer = []
@@ -102,8 +94,6 @@ def dp4(atoms, expt, calc_df):
 
     # convert to P(isomer|DP4)
     for k in range(number_of_isomers):
-        if args.verbose:
-            print("verbose output")
         p_isomer_given_c_dp4.append(p_c_dp4_given_isomer[k] / sum(p_c_dp4_given_isomer))
         p_isomer_given_h_dp4.append(p_h_dp4_given_isomer[k] / sum(p_h_dp4_given_isomer))
         p_isomer_given_combined_dp4.append(p_combined_dp4_given_isomer[k] / sum(p_combined_dp4_given_isomer))
