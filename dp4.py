@@ -9,6 +9,10 @@ SD_1H = 0.185
 DF_13C = 11.38
 SD_13C = 2.306
 
+# control how precise the output should be (i.e. how many decimal places). 11 is a good number.
+# Don't decrease this below 8, or fmt_float will crash.
+output_precision = 11
+
 
 def error_quit(error_message):
     print()
@@ -22,10 +26,10 @@ def fmt_float(fl, desired_length):
     # this returns a string, not a float!
     # 4 is the number of characters needed for "e-xx" at the end of a scientific number
     # unless it is SUPER tiny, but let's not worry about that here......
-    if -(1 / 10 ** (desired_length - 4)) < fl < (1 / 10 ** (desired_length - 4)) and fl != 0:
-        return "{:{}.2e}".format(fl, desired_length)
+    if -0.0001 < fl < 0.0001 and fl != 0:
+        return "{:{}.{}e}".format(fl, desired_length, desired_length - 8)
     else:
-        return "{:{}.6f}".format(fl, desired_length)
+        return "{:{}.{}f}".format(fl, desired_length, desired_length - 4)
 
 
 def fmt_string(st, desired_length):
@@ -60,9 +64,9 @@ def calculate_dp4_probability(atoms, expt, calc):
     # perform empirical scaling of shifts. Calculated shifts are y-axis (slightly counterintuitive)
     c_slope, c_intercept, x4, x5, x6 = stats.linregress(expt_c, calc_c)
     h_slope, h_intercept, x7, x8, x9 = stats.linregress(expt_h, calc_h)
-    scaled_calc_c = (calc_c - c_intercept)/c_slope
+    scaled_calc_c = (calc_c - c_intercept) / c_slope
     scaled_calc_c.name = "scaled_calc_c"
-    scaled_calc_h = (calc_h - h_intercept)/h_slope
+    scaled_calc_h = (calc_h - h_intercept) / h_slope
     scaled_calc_h.name = "scaled_calc_h"
 
     # calculate errors
@@ -82,7 +86,6 @@ def calculate_dp4_probability(atoms, expt, calc):
 
 
 def dp4(atoms, expt, calc_df):
-
     number_of_isomers = len(calc_df.columns) - 2
     product_probs_c = []
     product_probs_h = []
@@ -118,28 +121,29 @@ def dp4(atoms, expt, calc_df):
         p_isomer_given_combined_shifts.append(product_probs_combined[k] / sum(product_probs_combined))
         # generate strings for nice tabular output
         # string containing all names of calculated isomers
-        calc_name_str = calc_name_str + fmt_string(calc_df.iloc[:, k + 2].name, 11) + " "
+        calc_name_str = calc_name_str + fmt_string(calc_df.iloc[:, k + 2].name, output_precision + 1) + " "
         # strings containing all products of probabilities
-        product_probs_combined_str = product_probs_combined_str + fmt_float(product_probs_combined[k], 10) + "  "
-        product_probs_c_str = product_probs_c_str + fmt_float(product_probs_c[k], 10) + "  "
-        product_probs_h_str = product_probs_h_str + fmt_float(product_probs_h[k], 10) + "  "
+        product_probs_combined_str = product_probs_combined_str \
+                                     + fmt_float(product_probs_combined[k], output_precision) + "  "
+        product_probs_c_str = product_probs_c_str + fmt_float(product_probs_c[k], output_precision) + "  "
+        product_probs_h_str = product_probs_h_str + fmt_float(product_probs_h[k], output_precision) + "  "
         # strings containing Bayes theorem probabilities for each isomer
-        p_combined_str = p_combined_str + fmt_float(p_isomer_given_combined_shifts[k], 10) + "  "
-        p_c_str = p_c_str + fmt_float(p_isomer_given_c_shifts[k], 10) + "  "
-        p_h_str = p_h_str + fmt_float(p_isomer_given_h_shifts[k], 10) + "  "
+        p_combined_str = p_combined_str + fmt_float(p_isomer_given_combined_shifts[k], output_precision) + "  "
+        p_c_str = p_c_str + fmt_float(p_isomer_given_c_shifts[k], output_precision) + "  "
+        p_h_str = p_h_str + fmt_float(p_isomer_given_h_shifts[k], output_precision) + "  "
 
     # print output
-    print("-" * (len(calc_name_str) + 25))
+    print("-" * (len(calc_name_str) + 21))  # Don't ask why 21. It's magic! Just try it and see.
     print("{}  ==>  {}".format(fmt_string(expt.name, 18), calc_name_str))
-    print("-" * (len(calc_name_str) + 25))
+    print("-" * (len(calc_name_str) + 21))
     print("P(combined errors)     {}".format(product_probs_combined_str))
     print("P(13C errors)          {}".format(product_probs_c_str))
     print("P(1H errors)           {}".format(product_probs_h_str))
-    print("-" * (len(calc_name_str) + 25))
+    print("-" * (len(calc_name_str) + 21))
     print("P(isomer, combined)    {}".format(p_combined_str))
     print("P(isomer, 13C)         {}".format(p_c_str))
     print("P(isomer, 1H)          {}".format(p_h_str))
-    print("-" * (len(calc_name_str) + 25))
+    print("-" * (len(calc_name_str) + 21))
     print()
 
     return 0
@@ -190,7 +194,8 @@ if __name__ == '__main__':
     for i in range(len(calc_df)):
         if not calc_df['label'][i] == expt_df['label'][i]:
             error_quit("Atom labels {} in dp4_calc.txt and {} in dp4_expt.txt do not match.".format(calc_df['label'][i],
-                                                                                                    expt_df['label'][i]))
+                                                                                                    expt_df['label'][
+                                                                                                        i]))
         if calc_df['atom'][i] not in ["C", "c", "H", "h"]:
             error_quit("Atom label {} in dp4_calc.txt does not begin with C/c/H/H.".format(calc_df['label'][i]))
         if expt_df['atom'][i] not in ["C", "c", "H", "h"]:
