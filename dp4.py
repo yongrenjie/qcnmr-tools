@@ -15,14 +15,25 @@ def error_quit(error_message):
     print("ERROR: {}".format(error_message))
     print("Exiting...")
     sys.exit()
-    return 0
 
 
-def fmt_float(fl):
-    if -0.000001 < fl < 0.000001 and fl != 0:
-        return "{:10.2e}".format(fl)
+def fmt_float(fl, desired_length):
+    # Trims a float to a certain length and displays it in scientific notation if it's tiny.
+    # this returns a string, not a float!
+    # 4 is the number of characters needed for "e-xx" at the end of a scientific number
+    # unless it is SUPER tiny, but let's not worry about that here......
+    if -(1 / 10 ** (desired_length - 4)) < fl < (1 / 10 ** (desired_length - 4)) and fl != 0:
+        return "{:{}.2e}".format(fl, desired_length)
     else:
-        return "{:10.6f}".format(fl)
+        return "{:{}.6f}".format(fl, desired_length)
+
+
+def fmt_string(st, desired_length):
+    # Trims a string to a certain length, or pads it with spaces if it's shorter than that
+    if len(st) < desired_length:
+        return st + " " * (desired_length - len(st))
+    else:
+        return st[0:desired_length]
 
 
 def calculate_dp4_probability(atoms, expt, calc):
@@ -30,6 +41,7 @@ def calculate_dp4_probability(atoms, expt, calc):
     Returns the product of probabilities of observing the errors in chemical shifts, i.e. P of getting the calculated
     shifts given the experimental shifts, or P(DP4|A) where A is a specific assignment.
     More precisely, this returns a list of the 13C, 1H, and combined DP4 probabilities, in that order.
+    Note that this is _not_ the probability of an isomer being the correct one!
     """
 
     # generate sub-series for 13C and 1H chemical shifts from the overall series
@@ -72,37 +84,63 @@ def calculate_dp4_probability(atoms, expt, calc):
 def dp4(atoms, expt, calc_df):
 
     number_of_isomers = len(calc_df.columns) - 2
-    p_c_dp4_given_isomer = []
-    p_h_dp4_given_isomer = []
-    p_combined_dp4_given_isomer = []
-    p_isomer_given_c_dp4 = []
-    p_isomer_given_h_dp4 = []
-    p_isomer_given_combined_dp4 = []
+    product_probs_c = []
+    product_probs_h = []
+    product_probs_combined = []
+    p_isomer_given_c_shifts = []
+    p_isomer_given_h_shifts = []
+    p_isomer_given_combined_shifts = []
 
     print()
-    print("==============================")
+    print("=" * (14 + len(expt.name)))
     print("DP4 ANALYSIS: {}".format(expt.name))
-    print("==============================")
+    print("=" * (14 + len(expt.name)))
     print()
 
-    # calculate P(DP4|isomer)
+    # calculate P(shifts|structure), i.e. the product of probabilities of observing errors
     for j in range(number_of_isomers):
         c_prob, h_prob, combined_prob = calculate_dp4_probability(atoms, expt, calc_df.iloc[:, j + 2])
-        p_c_dp4_given_isomer.append(c_prob)
-        p_h_dp4_given_isomer.append(h_prob)
-        p_combined_dp4_given_isomer.append(combined_prob)
+        product_probs_c.append(c_prob)
+        product_probs_h.append(h_prob)
+        product_probs_combined.append(combined_prob)
 
-    # convert to P(isomer|DP4)
+    # calculate P(structure|shifts), i.e. Bayes' theorem probabilities
+    calc_name_str = ""
+    product_probs_combined_str = ""
+    product_probs_c_str = ""
+    product_probs_h_str = ""
+    p_combined_str = ""
+    p_c_str = ""
+    p_h_str = ""
     for k in range(number_of_isomers):
-        p_isomer_given_c_dp4.append(p_c_dp4_given_isomer[k] / sum(p_c_dp4_given_isomer))
-        p_isomer_given_h_dp4.append(p_h_dp4_given_isomer[k] / sum(p_h_dp4_given_isomer))
-        p_isomer_given_combined_dp4.append(p_combined_dp4_given_isomer[k] / sum(p_combined_dp4_given_isomer))
-        print("ASSIGNMENT {} : {} ==> {}".format(k + 1, expt.name, calc_df.iloc[:, k + 2].name))
-        print("------------------------------------")
-        print("13C      : {}".format(fmt_float(p_isomer_given_c_dp4[k])))
-        print("1H       : {}".format(fmt_float(p_isomer_given_h_dp4[k])))
-        print("Combined : {}".format(fmt_float(p_isomer_given_combined_dp4[k])))
-        print()
+        p_isomer_given_c_shifts.append(product_probs_c[k] / sum(product_probs_c))
+        p_isomer_given_h_shifts.append(product_probs_h[k] / sum(product_probs_h))
+        p_isomer_given_combined_shifts.append(product_probs_combined[k] / sum(product_probs_combined))
+        # generate strings for nice tabular output
+        # string containing all names of calculated isomers
+        calc_name_str = calc_name_str + fmt_string(calc_df.iloc[:, k + 2].name, 11) + " "
+        # strings containing all products of probabilities
+        product_probs_combined_str = product_probs_combined_str + fmt_float(product_probs_combined[k], 10) + "  "
+        product_probs_c_str = product_probs_c_str + fmt_float(product_probs_c[k], 10) + "  "
+        product_probs_h_str = product_probs_h_str + fmt_float(product_probs_h[k], 10) + "  "
+        # strings containing Bayes theorem probabilities for each isomer
+        p_combined_str = p_combined_str + fmt_float(p_isomer_given_combined_shifts[k], 10) + "  "
+        p_c_str = p_c_str + fmt_float(p_isomer_given_c_shifts[k], 10) + "  "
+        p_h_str = p_h_str + fmt_float(p_isomer_given_h_shifts[k], 10) + "  "
+
+    # print output
+    print("-" * (len(calc_name_str) + 25))
+    print("{}  ==>  {}".format(fmt_string(expt.name, 18), calc_name_str))
+    print("-" * (len(calc_name_str) + 25))
+    print("P(combined errors)     {}".format(product_probs_combined_str))
+    print("P(13C errors)          {}".format(product_probs_c_str))
+    print("P(1H errors)           {}".format(product_probs_h_str))
+    print("-" * (len(calc_name_str) + 25))
+    print("P(isomer, combined)    {}".format(p_combined_str))
+    print("P(isomer, 13C)         {}".format(p_c_str))
+    print("P(isomer, 1H)          {}".format(p_h_str))
+    print("-" * (len(calc_name_str) + 25))
+    print()
 
     return 0
 
