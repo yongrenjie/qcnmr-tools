@@ -20,10 +20,8 @@ C17      41.07 41.39
 # To the best of my knowledge, the 13C DP4 calculation in the original paper is numerically incorrect.
 H1(R)    2.79 2.66
 H1(S)    2.75 2.76
-H2(R)    1.39 1.28
-H2(S)    1.32 1.16
-# In 15b the labels for H2(R) and H2(S) have been swapped relative to the original paper
-# as there is not yet proper functionality to cope with incomplete shift assignment.
+H2(R)    1.39 1.16
+H2(S)    1.32 1.28
 H3(R)    1.42 1.57
 H3(S)    1.47 1.52
 H4(R)    1.56 1.60

@@ -25,6 +25,7 @@
 
 import pandas as pd
 from scipy import stats
+import sys
 
 # define degrees of freedom and standard deviations for t-distributions, as reported in main text of paper
 DF_1H = 14.18
@@ -61,11 +62,25 @@ def fmt_string(st, desired_length):
         return st[0:desired_length]
 
 
-def calculate_dp4_probability(atoms, expt, calc):
+def calculate_dp4_probability(atoms, stars, expt, calc):
     # Returns the product of probabilities of observing the errors in chemical shifts, i.e. P of getting the calculated
     # shifts given the experimental shifts, or P(DP4|A) where A is a specific assignment.
     # More precisely, this returns a list of the 13C, 1H, and combined DP4 probabilities, in that order.
     # Note that this is _not_ the probability of an isomer being the correct one!
+
+    # some code to sort any shifts with asterisks
+    for i in range(max(stars)):
+        # find indices corresponding to i number of asterisks
+        indices = [x for x, y in enumerate(stars) if y == i + 1]
+        # then find the shifts corresponding to those indices and sort them in ascending order
+        # the order in which the shifts appear don't matter, as long as they are paired correctly in calc and expt
+        expt_sorted = expt[indices].sort_values().reset_index(drop=True)
+        calc_sorted = calc[indices].sort_values().reset_index(drop=True)
+        # so now we can access the sorted shifts with expt_sorted[j] where j ranges from 0 to i-1
+        # and use a loop to replace the data in the original expt and calc Series
+        for j in range(len(indices)):
+            expt.loc[indices[j]] = expt_sorted[j]
+            calc.loc[indices[j]] = calc_sorted[j]
 
     # generate sub-series for 13C and 1H chemical shifts from the overall series
     carbons = []
@@ -104,7 +119,7 @@ def calculate_dp4_probability(atoms, expt, calc):
     return [total_c_prob, total_h_prob, total_combined_prob]
 
 
-def dp4(atoms, expt, calc_df):
+def dp4(atoms, stars, expt, calc_df):
     # This function runs the DP4 analysis for a set of experimental data against a DF of experimental data.
     # It also prints some very nicely formatted output!
 
@@ -133,7 +148,11 @@ def dp4(atoms, expt, calc_df):
 
     # calculate P(shifts|structure), i.e. the product of probabilities of observing errors
     for j in range(number_of_isomers):
-        c_prob, h_prob, combined_prob = calculate_dp4_probability(atoms, expt, calc_df.iloc[:, j + 2])
+        c_prob, h_prob, combined_prob = calculate_dp4_probability(atoms,
+                                                                  stars,
+                                                                  expt.copy(),
+                                                                  calc_df.iloc[:, j + 2].copy())
+        # needs .copy() to avoid SettingWithCopyWarning later on (although there's no functional difference)
         product_probs_c.append(c_prob)
         product_probs_h.append(h_prob)
         product_probs_combined.append(combined_prob)
@@ -176,7 +195,7 @@ def dp4(atoms, expt, calc_df):
     return 0
 
 
-def parse_data(filename):
+def parse_data(filename, stars):
     # This reads a .txt file containing data (in the format specified at the top of this document)
     # and returns a DF containing all of it for further manipulation.
 
@@ -188,27 +207,31 @@ def parse_data(filename):
             line_number = line_number + 1
             # gets names of the isomers from header line
             if line_number == 1:
-                names = ["label", "atom"] + line.split()
+                names = ["label", "atom", "stars"] + line.split()
             # gets shifts from lines below, rejecting whitespace and comments
             if line_number > 1 and line.strip() and not line.strip().startswith("#"):
-                if not (len(line.split()) - 1 == len(names) - 2):
+                asterisks = len(line.split()[0]) - len(line.split()[0].rstrip("*"))
+                if not (len(line.split()) - 1 == len(names) - 3):
                     error_quit("Number of shifts in line {} of {} does not "
                                "match the number of names given.".format(line_number, filename))
-                line_data = [line.split()[0], line.split()[0][0]] + [float(i) for i in line.split()[1:]]
+                line_data = [line.split()[0], line.split()[0][0], asterisks] + [float(i) for i in line.split()[1:]]
                 data.append(line_data)
 
-        return pd.DataFrame(data, columns=names)
+        df = pd.DataFrame(data, columns=names)
+        if not stars:
+            df = df.drop(columns=["stars"])
+        return df
 
 
 if __name__ == '__main__':
     # get data from files
-    calc_df = parse_data("dp4_calc.txt")
-    expt_df = parse_data("dp4_expt.txt")
+    calc_df = parse_data("dp4_calc.txt", False)
+    expt_df = parse_data("dp4_expt.txt", True)
 
     # check for invalid number of columns
     if len(calc_df.columns) < 4:
         error_quit("Please provide at least two sets of calculated shifts for DP4 analysis.")
-    if len(expt_df.columns) < 3:
+    if len(expt_df.columns) < 4:
         error_quit("Please provide at least one set of experimental shifts for DP4 analysis.")
 
     # print the parsed data
@@ -224,7 +247,7 @@ if __name__ == '__main__':
 
     # check for invalid rows in chemical shift data
     for i in range(len(calc_df)):
-        if not calc_df['label'][i] == expt_df['label'][i]:
+        if not calc_df['label'][i] == expt_df['label'][i].rstrip("*"):
             error_quit("Atom labels {} in dp4_calc.txt and {} in dp4_expt.txt do not match.".format(calc_df['label'][i],
                                                                                                     expt_df['label'][i]))
         if calc_df['atom'][i] not in ["C", "c", "H", "h"]:
@@ -233,7 +256,7 @@ if __name__ == '__main__':
             error_quit("Atom label {} in dp4_expt.txt does not begin with C/c/H/H.".format(expt_df['label'][i]))
 
     # runs DP4 analysis for every column in the experimental data file
-    for j in range(len(expt_df.columns) - 2):
-        dp4(expt_df['atom'], expt_df.iloc[:, j + 2], calc_df)
+    for j in range(len(expt_df.columns) - 3):
+        dp4(expt_df['atom'], expt_df['stars'], expt_df.iloc[:, j + 3], calc_df)
 
     print("Please cite: Smith, S. G.; Goodman, J. M. J. Am. Chem. Soc. 2010, 132 (37), 12946–12959.")
