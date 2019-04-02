@@ -72,12 +72,13 @@ def calculate_dp4_probability(atoms, stars, expt, calc):
     # More precisely, this returns a list of the 13C, 1H, and combined DP4 probabilities, in that order.
     # Note that this is _not_ the probability of an isomer being the correct one!
 
-    # some code to sort any shifts with asterisks
+    # sort any shifts with asterisks
     for i in range(max(stars)):
-        # find indices corresponding to i number of asterisks
+        # find indices corresponding to i + 1 number of asterisks
         indices = [x for x, y in enumerate(stars) if y == i + 1]
         # then find the shifts corresponding to those indices and sort them in ascending order
-        # the order in which the shifts appear don't matter, as long as they are paired correctly in calc and expt
+        # The order in which the shifts appear don't matter, as long as they are correctly paired in calc and expt,
+        # so it is ok to take liberties with the exact ordering
         expt_sorted = expt[indices].sort_values().reset_index(drop=True)
         calc_sorted = calc[indices].sort_values().reset_index(drop=True)
         # so now we can access the sorted shifts with expt_sorted[j] where j ranges from 0 to i-1
@@ -87,23 +88,16 @@ def calculate_dp4_probability(atoms, stars, expt, calc):
             calc.loc[indices[j]] = calc_sorted[j]
 
     # generate sub-series for 13C and 1H chemical shifts from the overall series
-    carbons = []
-    hydrogens = []
-    for index, atom in atoms.iteritems():
-        if atom == "C" or index == "c":
-            carbons.append(index)
-        elif atom == "H" or index == "h":
-            hydrogens.append(index)
+    carbons = [index for index, atom in enumerate(atoms) if atom.lower() == "c"]
+    hydrogens = [index for index, atom in enumerate(atoms) if atom.lower() == "h"]
     expt_c = expt[carbons]
     expt_h = expt[hydrogens]
-    print(expt_h)
     calc_c = calc[carbons]
     calc_h = calc[hydrogens]
-    print(calc_h)
 
     # perform empirical scaling of shifts. Calculated shifts are y-axis (slightly counterintuitive)
-    c_slope, c_intercept, x4, x5, x6 = stats.linregress(expt_c, calc_c)
-    h_slope, h_intercept, x7, x8, x9 = stats.linregress(expt_h, calc_h)
+    c_slope, c_intercept, _, _, _ = stats.linregress(expt_c, calc_c)
+    h_slope, h_intercept, _, _, _ = stats.linregress(expt_h, calc_h)
     scaled_calc_c = (calc_c - c_intercept) / c_slope
     scaled_calc_c.name = "scaled_calc_c"
     scaled_calc_h = (calc_h - h_intercept) / h_slope
@@ -129,7 +123,7 @@ def dp4(atoms, stars, expt, calc_df):
     # This function runs the DP4 analysis for a set of experimental data against a DF of experimental data.
     # It also prints some very nicely formatted output!
 
-    # initialise stuff
+    # initialise stuff, these variables are explained later
     number_of_isomers = len(calc_df.columns) - 2
     product_probs_c = []
     product_probs_h = []
