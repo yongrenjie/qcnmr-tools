@@ -115,4 +115,3 @@ if __name__ == '__main__':
     print("Please run 'wc -l *.xyz' in the new directory to check that all the files have the same length.")
     print("They should all have {} lines.".format(smallest_number_of_atoms + 2))
     print()
-
