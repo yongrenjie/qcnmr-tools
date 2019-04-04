@@ -7,7 +7,10 @@
 from crossref.restful import Works, Etiquette
 import sys
 import pyperclip
-my_etiquette = Etiquette('DOI to BibLaTeX', '0.1', 'https://github.com/yongrenjie/qcnmr-tools', 'yongrenjie@gmail.com')
+my_etiquette = Etiquette('DOI to BibLaTeX',
+                         '0.1',
+                         'https://github.com/yongrenjie/qcnmr-tools/blob/master/doi2biblatex.py',
+                         'yongrenjie@gmail.com')
 
 
 def parse_given_names(given_names):
