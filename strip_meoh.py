@@ -112,7 +112,7 @@ if __name__ == '__main__':
     for file in args.filenames:
         strip_meoh(file, smallest_number_of_atoms)
     print()
-    print("Please run 'wc -l stripped*.xyz' to check that all the newly generated files have the same length.")
+    print("Please run 'wc -l *.xyz' in the new directory to check that all the files have the same length.")
     print("They should all have {} lines.".format(smallest_number_of_atoms + 2))
     print()
 
