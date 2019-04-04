@@ -8,7 +8,7 @@ from crossref.restful import Works, Etiquette
 import sys
 import pyperclip
 my_etiquette = Etiquette('DOI to BibLaTeX',
-                         '0.1',
+                         '1.0',
                          'https://github.com/yongrenjie/qcnmr-tools/blob/master/doi2biblatex.py',
                          'yongrenjie@gmail.com')
 
