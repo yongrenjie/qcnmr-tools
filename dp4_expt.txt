@@ -17,10 +17,12 @@ C14    40.0
 C15    22.0
 C16    23.0
 C17    43.4
+# To the best of my knowledge, the 13C DP4 calculation in the original paper is numerically incorrect.
 H1(R)  2.82
 H1(S)  2.82
-H2(R)  1.58
-H2(S)  1.53
+# The asterisks represent uncertain assignments of experimental data. This typically occurs with diastereotopic CH2.
+H2(R)* 1.58
+H2(S)* 1.53
 H3(R)  1.57
 H3(S)  1.57
 H4(R)  1.66
