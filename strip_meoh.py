@@ -43,10 +43,12 @@ def strip_meoh(xyz_file, n_atoms_desired):
     n_atoms_original = get_n_atoms(xyz_file)
     n_meoh_to_strip = int((n_atoms_original - n_atoms_desired) / 6)
 
+    os.system("mkdir -p stripped_conformers")
+
     # skip all of it if we don't need to remove anything
     if n_meoh_to_strip == 0:
         print("Not touching {}!".format(file))
-        os.system("cp {} {}".format(xyz_file, "stripped_" + xyz_file))
+        os.system("cp {} {}".format(xyz_file, "stripped_conformers/stripped_" + xyz_file))
         return 0
 
     print("Stripping {} methanol molecules from {}...".format(n_meoh_to_strip, xyz_file), end="")
@@ -69,7 +71,7 @@ def strip_meoh(xyz_file, n_atoms_desired):
     meoh_distances_to_remove = sorted(meoh_distances)[-n_meoh_to_strip:]
 
     # print the output file
-    output_file_name = "stripped_" + xyz_file
+    output_file_name = "stripped_conformers/stripped_" + xyz_file
     with open(output_file_name, "w") as out_xyz_file:
 
         # print the two header lines and the solute coordinates
