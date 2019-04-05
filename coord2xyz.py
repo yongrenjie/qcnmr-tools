@@ -35,7 +35,7 @@ def coord_to_xyz(coord_filename):
         xyz_coordinates.append("{} {:11.7f} {:11.7f} {:11.7f}".format(atom, x_ang, y_ang, z_ang))
 
     # print everything to the xyz file
-    base_name = coord_filename.rstrip(".coord").rstrip("coord")
+    base_name = coord_filename.replace(".coord", "").replace("coord", "")
     xyz_file = base_name + ".xyz"
     with open(xyz_file, "w") as output_file:
         print(len(xyz_coordinates), file=output_file) # number of atoms
