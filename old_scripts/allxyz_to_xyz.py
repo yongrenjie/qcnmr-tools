@@ -16,7 +16,7 @@ def determine_allxyz_file():
 def main():
     try:
         allxyz_file = determine_allxyz_file()
-        allxyz_file_name = allxyz_file.rstrip(".allxyz")
+        allxyz_file_name = allxyz_file.replace(".allxyz", "")
         input_file = open(allxyz_file,'r')
         print("Converting {}...".format(allxyz_file))
         conformer_number = 1

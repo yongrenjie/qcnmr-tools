@@ -40,7 +40,7 @@ if __name__ == '__main__':
     file_number = 1
     full_df = pd.DataFrame()
     for filename in args.filenames:
-        base_name = filename.rstrip(".csv")
+        base_name = filename.replace(".csv", "")
         if file_number == 1:
             num, ene = get_full_list(filename)
             full_df.loc[:, 'num'] = num
