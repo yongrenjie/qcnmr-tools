@@ -13,8 +13,8 @@ if __name__ == '__main__':
     csv_file = args.csv_filename
     allxyz_file = args.allxyz_filename
 
-    base_name = csv_file.rstrip(".csv").split("/")[-1]
-    short_base_name = base_name.rstrip("_filtered")
+    base_name = csv_file.replace(".csv", "").split("/")[-1]
+    short_base_name = base_name.replace("_filtered", "")
     output_allxyz_file = csv_file.replace(".csv", ".allxyz")
 
     filtered_conformer_numbers = []
