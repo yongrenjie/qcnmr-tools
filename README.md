@@ -1,5 +1,7 @@
 # qcnmr-tools
 
+**This readme is slightly outdated!! It will be updated at some point in time, but for now, please ask me directly if you have any questions.**
+
 Assorted scripts (Python 3) to aid with calculation of NMR properties.
 
 The NMR calculation workflow is adapted from [Grimme *et al.*, *Angew. Chem. Int. Ed.* **2017,** *56* (46), 14763–14769](https://doi.org/10.1002/anie.201708266). The conformer generation uses a newer MTD/GC methodology from Grimme ([ChemRxiv](https://chemrxiv.org/articles/Exploration_of_Chemical_Compound_Conformer_and_Reaction_Space_with_Meta-Dynamics_Simulations_Based_on_Tight-Binding_Quantum_Chemical_Calculations/7660532)), which was shown to be superior to the MF/MD/GC methodology in the *Angew* paper. Below, the key steps (as well as where the scripts come in) are described in more detail. Each individual script has more explanation.
