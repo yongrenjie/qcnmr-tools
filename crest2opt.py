@@ -8,7 +8,8 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("crestname", action='store', help='crest_conformers.xyz file')
     parser.add_argument("csvname", action='store', help='csv file to filter conformers by')
-    parser.add_argument("--nofreq", action='store_true', help='Disable frequency calculation after optimisation')
+    parser.add_argument("--freq", action='store_false', help='Request numerical frequency calculation after'
+                                                             'optimisation')
     parser.add_argument("-r", "--remove", action="store", type=int, default=0,
                         help="Number of atoms to remove from the end of each set of coordinates")
     parser.add_argument("--constrain", action="store", type=int,
@@ -21,7 +22,7 @@ if __name__ == '__main__':
     csv_file = args.csvname
 
     keywords = "! TPSS def2-SVP D3BJ CPCM(Methanol) PAL4 Opt "
-    if not args.nofreq:
+    if args.freq:
         keywords = keywords + "NumFreq "
 
     allowed_conformers = []
@@ -35,8 +36,8 @@ if __name__ == '__main__':
                 allowed_conformer_energies.append(float(line.split(",")[2]))
     print()
     print("Input files will be generated for {} conformers: {}".format(len(allowed_conformers), allowed_conformers))
-    if args.nofreq:
-        print("No frequency calculation requested.")
+    if args.freq:
+        print("Frequency calculation requested.")
     print()
 
     # determine total number of atoms
