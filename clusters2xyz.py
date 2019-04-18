@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import argparse
 
 def get_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument("-l", "--ligname", help="Residue name of ligand as used in GROMACS")
     parser.add_argument("-f", "--filename", help='File containing clustered conformers (default clusters.pdb)',
                         default="clusters.pdb")
     parser.add_argument("--minsize", help="Minimum size of cluster (i.e. number of conformations in cluster)"
@@ -36,6 +38,10 @@ def add_zeroes(j):
 
 if __name__ == "__main__":
     args = get_args()
+
+    if not args.ligname:
+        print("Please provide the ligand name!!")
+        sys.exit()
     
     # could implement some smart searching here
     clust_file = args.filename
@@ -47,7 +53,7 @@ if __name__ == "__main__":
     # updates selection algebra for PyMol if explicit solvent is needed/desired
     selection_algebra = ""
     if args.explicit:
-        selection_algebra = " and byres all within 3.5 of resn jl1"
+        selection_algebra = " and byres all within 3.5 of resn {}".format(args.ligname)
     
     # creates PyMol script which actually does the tough work
     with open("pymol.pml", "w") as pymol_s:
