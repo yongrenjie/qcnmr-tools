@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Navigate to the folder in which the optimised .xyz files are in. These should be named tpss_svp_opt_<confno>.xyz
+# Navigate to the folder in which the optimised .xyz files are in. These should be named s3_<no>_opt_svp.xyz
 # (or something similar). Then run:
 #    opt2nmr.py nmr_filtered_conformers.csv
 # where nmr_filtered_conformers.csv is the csv file containing conformers for NMR calculations.
@@ -55,7 +55,7 @@ if __name__ == '__main__':
     print()
 
     # generate keywords and eprnmr block for ORCA input file
-    keywords = "! PBE0 cc-pVTZ cc-pVTZ/JK D3BJ CPCM(Methanol) PAL4"  # Change this if desired.
+    shielding_keywords = "! PBE0 cc-pVTZ cc-pVTZ/JK D3BJ CPCM(Methanol) PAL4"  # Change this if desired.
     eprnmr_shielding = "%eprnmr\n" \
                         "    Ori = GIAO\n" \
                         "    Nuclei = all C { shift }\n" \
@@ -118,7 +118,7 @@ if __name__ == '__main__':
             atom_number = 0
             line_count = 1
             with open(inp_name, 'w') as inp_file:
-                print(keywords, file=inp_file)
+                print(shielding_keywords, file=inp_file)
                 print("", file=inp_file)
                 print("#  S4-SP: {}".format(allowed_conformer_energies[allowed_conformers.index(conformer_number)]),
                       file=inp_file)  # prints def2-TZVPP energy as a comment
@@ -142,21 +142,21 @@ if __name__ == '__main__':
     print("Shielding input files written to s5-shielding.")
     print()
 
-    # generate HH coupling input files
+    # generate coupling input files
     try:
-        os.mkdir("s6a-HHcoupling")
+        os.mkdir("s6-coupling")
     except:
         pass
-    print("Generating H–H coupling input files...")
+    print("Generating coupling input files...")
     for file in allowed_xyz_files:
         conformer_number = int(file.split(".")[-2].split("_")[1])  # gets conformer number from file name
-        inp_name = "s6a-HHcoupling/s6a_{}_nmr_HHcoupling.inp".format(conformer_number)  # Change if desired
+        inp_name = "s6-coupling/s6_{}_nmr_coupling.inp".format(conformer_number)  # Change if desired
 
         with open(file, 'r') as xyz_file:
             atom_number = 0
             line_count = 1
             with open(inp_name, 'w') as inp_file:
-                print(keywords, file=inp_file)
+                print(shielding_keywords, file=inp_file)
                 print("", file=inp_file)
                 print("#  S4-SP: {}".format(allowed_conformer_energies[allowed_conformers.index(conformer_number)]),
                       file=inp_file)  # prints def2-TZVPP energy as a comment
@@ -178,44 +178,7 @@ if __name__ == '__main__':
                 print("*", file=inp_file)
                 print("", file=inp_file)
                 print(eprnmr_coupling_hh, file=inp_file)
-    print("H–H coupling input files written to s6a-HHcoupling.")
+    print("Coupling input files written to s6-coupling.")
     print()
 
-    # generate CH coupling input files
-    try:
-        os.mkdir("s6b-CHcoupling")
-    except:
-        pass
-    print("Generating C–H coupling input files...")
-    for file in allowed_xyz_files:
-        conformer_number = int(file.split(".")[-2].split("_")[1])  # gets conformer number from file name
-        inp_name = "s6b-CHcoupling/s6b_{}_nmr_CHcoupling.inp".format(conformer_number)  # Change if desired
-
-        with open(file, 'r') as xyz_file:
-            line_count = 1
-            atom_number = 0
-            with open(inp_name, 'w') as inp_file:
-                print(keywords, file=inp_file)
-                print("", file=inp_file)
-                print("#  S4-SP: {}".format(allowed_conformer_energies[allowed_conformers.index(conformer_number)]),
-                      file=inp_file)  # prints def2-TZVPP energy as a comment
-                print("#  Population: {}".format(
-                    allowed_conformer_populations[allowed_conformers.index(conformer_number)]),
-                      file=inp_file)
-                print("", file=inp_file)
-                print("*xyz 0 1", file=inp_file)
-                for line in xyz_file:
-                    if line_count >= 3:
-                        if args.atoms and atom_number < args.atoms:
-                            print(line.rstrip("\n"), file=inp_file)
-                        elif not args.atoms:
-                            print(line.rstrip("\n"), file=inp_file)
-                        else:
-                            pass
-                        atom_number = atom_number + 1
-                    line_count = line_count + 1
-                print("*", file=inp_file)
-                print("", file=inp_file)
-                print(eprnmr_coupling_ch, file=inp_file)
-    print("C–H coupling input files written to s6b-CHcoupling.")
     print()
