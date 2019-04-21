@@ -8,8 +8,8 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("crestname", action='store', help='crest_conformers.xyz file')
     parser.add_argument("csvname", action='store', help='csv file to filter conformers by')
-    parser.add_argument("--freq", action='store_false', help='Request numerical frequency calculation after'
-                                                             'optimisation')
+    parser.add_argument("--freq", action='store_true',
+                        help='Request numerical frequency calculation after optimisation')
     parser.add_argument("-r", "--remove", action="store", type=int, default=0,
                         help="Number of atoms to remove from the end of each set of coordinates")
     parser.add_argument("--constrain", action="store", type=int,
@@ -22,6 +22,7 @@ if __name__ == '__main__':
     csv_file = args.csvname
 
     keywords = "! TPSS def2-SVP D3BJ CPCM(Methanol) PAL4 Opt "
+
     if args.freq:
         keywords = keywords + "NumFreq "
 
