@@ -13,12 +13,27 @@ my_etiquette = Etiquette('DOI to BibLaTeX',
                          'yongrenjie@gmail.com')
 
 
+# Dictionary containing correct (as listed in CASSI) abbreviations of some journals.
+journal_abbreviations_dict = {
+    "Proceedings of the National Academy of Sciences": "Proc. Acad. Natl. Sci. U. S. A."
+}
+
+
+
 def parse_given_names(given_names):
     # converts "Jonathan R. J." to "J. R. J."
     parsed_names = ""
     for name in given_names:
         parsed_names = parsed_names + name[0] + ". "
     return parsed_names[:-1]
+
+
+def remove_spaces(names):
+    # converts "del Potro" to "delPotro"
+    names_without_spaces = ""
+    for name in names.split():
+        names_without_spaces = names_without_spaces + name
+    return names_without_spaces
 
 
 if __name__ == '__main__':
@@ -32,6 +47,10 @@ if __name__ == '__main__':
     doi_dict = works.doi(doi)
 
     short_journal_name = doi_dict["short-container-title"][0]
+    # replace the abbreviation if it's wrong
+    if short_journal_name in journal_abbreviations_dict:
+        short_journal_name = journal_abbreviations_dict[short_journal_name]
+
     article_title = doi_dict["title"][0]
 
     try:
@@ -66,7 +85,7 @@ if __name__ == '__main__':
         parsed_author_names = parsed_author_names + family_name + ", " + given_names + " and "
     parsed_author_names = parsed_author_names[:-5]
 
-    reference_name = parsed_author_names.split(",")[0] + str(year)
+    reference_name = remove_spaces(parsed_author_names.split(",")[0]) + str(year)
 
     biblatex_citation = ""
     biblatex_citation = biblatex_citation + "@article{{{},\n".format(reference_name)
