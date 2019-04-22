@@ -15,7 +15,8 @@ my_etiquette = Etiquette('DOI to BibLaTeX',
 
 # Dictionary containing correct (as listed in CASSI) abbreviations of some journals.
 journal_abbreviations_dict = {
-    "Proceedings of the National Academy of Sciences": "Proc. Acad. Natl. Sci. U. S. A."
+    "Proceedings of the National Academy of Sciences": "Proc. Acad. Natl. Sci. U. S. A.",
+    "The Journal of Chemical Physics": "J. Chem. Phys.",
 }
 
 
