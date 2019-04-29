@@ -251,9 +251,9 @@ if __name__ == '__main__':
             error_quit("Atom labels {} in dp4_calc.txt and {} in dp4_expt.txt do not match.".format(calc_df['label'][i],
                                                                                                     expt_df['label'][i]))
         if calc_df['atom'][i] not in ["C", "c", "H", "h"]:
-            error_quit("Atom label {} in dp4_calc.txt does not begin with C/c/H/H.".format(calc_df['label'][i]))
+            error_quit("Atom label {} in dp4_calc.txt does not begin with C/c/H/h.".format(calc_df['label'][i]))
         if expt_df['atom'][i] not in ["C", "c", "H", "h"]:
-            error_quit("Atom label {} in dp4_expt.txt does not begin with C/c/H/H.".format(expt_df['label'][i]))
+            error_quit("Atom label {} in dp4_expt.txt does not begin with C/c/H/h.".format(expt_df['label'][i]))
 
     # runs DP4 analysis for every column in the experimental data file
     for j in range(len(expt_df.columns) - 3):
