@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 
 import os
-import sys
 import argparse
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-l", "--ligname", help="Residue name of ligand as used in GROMACS")
     parser.add_argument("-f", "--filename", help='File containing clustered conformers (default clusters.pdb)',
                         default="clusters.pdb")
     parser.add_argument("--minsize", help="Minimum size of cluster (i.e. number of conformations in cluster)"
                                           " to output an xyz file for", type=int, default=2)
     parser.add_argument("--explicit", action="store_true", help="Save xyz files including MeOH within 3.5 Ang of lig")
+    parser.add_argument("--restart", help="Conformer number to start from (useful if a previous "
+                                          "job terminated prematurely)", type=int, default=0)
     return parser.parse_args()
 
 
@@ -38,10 +38,6 @@ def add_zeroes(j):
 
 if __name__ == "__main__":
     args = get_args()
-
-    if not args.ligname:
-        print("Please provide the ligand name!!")
-        sys.exit()
     
     # could implement some smart searching here
     clust_file = args.filename
@@ -53,14 +49,15 @@ if __name__ == "__main__":
     # updates selection algebra for PyMol if explicit solvent is needed/desired
     selection_algebra = ""
     if args.explicit:
-        selection_algebra = " and byres all within 3.5 of resn {}".format(args.ligname)
+        selection_algebra = " and byres all within 3.5 of resn jl1"
     
     # creates PyMol script which actually does the tough work
     with open("pymol.pml", "w") as pymol_s:
         print("load {}, clust".format(clust_file), file=pymol_s)
         print("split_states clust", file=pymol_s)
         for i in range(1, clusters_to_print + 1):
-            print("save conf_{}.xyz, clust_{}{}".format(i, add_zeroes(i), selection_algebra), file=pymol_s)
+            if i >= args.restart:
+                print("save conf_{}.xyz, clust_{}{}".format(i, add_zeroes(i), selection_algebra), file=pymol_s)
         print("quit", file=pymol_s)
     
     # runs PyMol script from command line and cleans up the folder
