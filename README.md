@@ -1,5 +1,7 @@
 # qcnmr-tools
 
+**This readme is slightly outdated!! It will be updated at some point in time, but for now, please ask me directly if you have any questions.**
+
 Assorted scripts (Python 3) to aid with calculation of NMR properties.
 
 The NMR calculation workflow is adapted from [Grimme *et al.*, *Angew. Chem. Int. Ed.* **2017,** *56* (46), 14763–14769](https://doi.org/10.1002/anie.201708266). The conformer generation uses a newer MTD/GC methodology from Grimme ([ChemRxiv](https://chemrxiv.org/articles/Exploration_of_Chemical_Compound_Conformer_and_Reaction_Space_with_Meta-Dynamics_Simulations_Based_on_Tight-Binding_Quantum_Chemical_Calculations/7660532)), which was shown to be superior to the MF/MD/GC methodology in the *Angew* paper. Below, the key steps (as well as where the scripts come in) are described in more detail. Each individual script has more explanation.
@@ -31,7 +33,7 @@ Please use a separate folder for each of the following steps! Not only is it muc
 **Step 3: Optimise all conformers which pass the previous filter. Any conformers above a certain energy (relative to the lowest energy conformer) are rejected.** (default TPSS/def2-SVP/D3BJ/CPCM(Methanol))
 
  - In order to generate the input files for the optimisation, both `crest_conformers.xyz` (generated in Step 1 as output of the CREST program) as well as `sp_filtered_conformers.csv` (generated in Step 2) are required.
- - Run `crestxyz_to_opt.py crest_conformers.xyz sp_filtered_conformers.csv`. This generates a folder, `s3-opt`, which contains all the input files for the optimisation. By default, the input files include the `NumFreq` keyword which requests numerical frequencies; this can be turned off by using `--nofreq`.
+ - Run `crestxyz_to_opt.py crest_conformers.xyz sp_filtered_conformers.csv`. This generates a folder, `s3-opt`, which contains all the input files for the optimisation. By default, the input files do not include the `NumFreq` keyword which requests numerical frequencies; this can be turned on by using `--freq`.
  - Once the calculations are done, `energies.py *.out` can again be used to generate the csv file `opt_filtered_conformers.csv` which contains all conformers below X kcal/mol.
 
 **Step 4: Calculate the energy of all conformers at a higher level of theory and select only the conformers which contribute a cumulative X% population** (default TPSS/def2-TZVPP/D3BJ/CPCM(Methanol))
