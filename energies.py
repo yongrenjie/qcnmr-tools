@@ -11,7 +11,7 @@ KT_298_K = 0.592186673
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("filenames", action='store', help='.out file(s) to analyse', nargs="*")
-    parser.add_argument("-t", "--threshold", type=int, default=0,
+    parser.add_argument("-t", "--threshold", type=float, default=0,
                         help="Finds conformers within X kcal/mol of the lowest "
                              "energy conformer and prints them to a csv file.")
     parser.add_argument("-c", "--csv", action='store_true', help='Output all conformers to a csv file.')
