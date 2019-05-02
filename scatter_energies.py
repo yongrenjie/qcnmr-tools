@@ -16,7 +16,7 @@ def get_args():
                         help='.csv file from a later step (after filtering). ')
     parser.add_argument('-t',
                         '--threshold',
-                        type=int,
+                        type=float,
                         action='store',
                         help='Energy cutoff (in kcal/mol) for the next round of filtering. '
                              'For more explanation see the README.')
