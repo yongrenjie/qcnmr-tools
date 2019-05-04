@@ -88,6 +88,13 @@ if __name__ == '__main__':
                     if energy_string in line:
                         conformer_energies.append(float(line.split()[energy_index]))
 
+            # backup code to handle the annoying case where you actually only have one conformer
+            if len(conformer_numbers) == 0:
+                try:
+                    conformer_numbers.append(int(output_file.split(".")[-2].split("_")[1]))  # gets number from file name
+                except:
+                    conformer_numbers.append(1)
+
             all_conformers = pd.DataFrame({'num': conformer_numbers, 'energy': conformer_energies})
             all_conformers['energy'] = (all_conformers['energy'] - all_conformers['energy'].min()) * HARTREE_TO_KCAL
 
