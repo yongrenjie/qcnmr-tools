@@ -55,8 +55,8 @@ if __name__ == '__main__':
     print()
 
     # generate keywords and eprnmr block for ORCA input file
-    shielding_keywords = "! PBE0 cc-pVTZ cc-pVTZ/JK D3BJ CPCM(Methanol) PAL8 \n\n %maxcore 4000"  # Change this if desired.
-    coupling_keywords = "! PBE0 pcJ-2 AutoAux D3BJ CPCM(Methanol) PAL8 \n\n %maxcore 4000"  # Change this if desired.
+    shielding_keywords = "! PBE0 cc-pVTZ cc-pVTZ/JK D3BJ CPCM(Methanol) PAL8 \n\n%maxcore 4000"  # Change this if desired.
+    coupling_keywords = "! PBE0 pcJ-2 AutoAux D3BJ CPCM(Methanol) PAL8 \n\n%maxcore 4000"  # Change this if desired.
     eprnmr_shielding = "%eprnmr\n" \
                         "    Ori = GIAO\n" \
                         "    Nuclei = all C { shift }\n" \
