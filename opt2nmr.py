@@ -55,7 +55,8 @@ if __name__ == '__main__':
     print()
 
     # generate keywords and eprnmr block for ORCA input file
-    shielding_keywords = "! PBE0 cc-pVTZ cc-pVTZ/JK D3BJ CPCM(Methanol) PAL4"  # Change this if desired.
+    shielding_keywords = "! PBE0 cc-pVTZ cc-pVTZ/JK D3BJ CPCM(Methanol) PAL8"  # Change this if desired.
+    coupling_keywords = "! PBE0 pcJ-2 AutoAux D3BJ CPCM(Methanol) PAL8"  # Change this if desired.
     eprnmr_shielding = "%eprnmr\n" \
                         "    Ori = GIAO\n" \
                         "    Nuclei = all C { shift }\n" \
@@ -156,7 +157,7 @@ if __name__ == '__main__':
             atom_number = 0
             line_count = 1
             with open(inp_name, 'w') as inp_file:
-                print(shielding_keywords, file=inp_file)
+                print(coupling_keywords, file=inp_file)
                 print("", file=inp_file)
                 print("#  S4-SP: {}".format(allowed_conformer_energies[allowed_conformers.index(conformer_number)]),
                       file=inp_file)  # prints def2-TZVPP energy as a comment
