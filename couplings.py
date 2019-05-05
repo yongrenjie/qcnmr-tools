@@ -87,6 +87,11 @@ if __name__ == '__main__':
                 total_pop = total_pop + full_df.at['pop',name]
         full_df.at['pop', 'avg_coupl'] = total_pop
 
+        # correct the shifts if they are too far away from 1
+        if total_pop < 0.99999 or total_pop > 1.00001:
+            full_df['avg_coupl'] = full_df['avg_coupl'] / total_pop
+            full_df.at['pop', 'avg_coupl'] = total_pop
+
         # round the final value to 2 decimal places
         full_df['avg_coupl'] = full_df['avg_coupl'].round(2)
 
@@ -95,6 +100,10 @@ if __name__ == '__main__':
         csv_filename = "coupling_constant_data.csv"
         full_df.to_csv(csv_filename)
         print("Data written to {}.".format(csv_filename))
+
+        if total_pop < 0.9999 or total_pop > 1.0001:
+            print("\nWARNING: The sum of populations was quite far off from 1! It was {}".format(total_pop))
+            print("The script has automatically corrected for this, but please make sure it was intended.\n")
 
     else:
         for file in args.filenames:
