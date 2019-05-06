@@ -14,6 +14,6 @@ if __name__ == "__main__":
     not_converged = [j for j in all_out_files if not j in converged]
 
     print()
-    print("{} file(s) in this directory have not converged".format(len(not_converged)))
+    print("{} file(s) in this directory not converged".format(len(not_converged)))
     print("\n".join(not_converged))
 
