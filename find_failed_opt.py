@@ -3,17 +3,17 @@
 import os
 
 
-def conv(file_name):
-    converged = False
-    with open(file_name, "r") as file:
-        for line in file:
-            if "THE OPTIMIZATION HAS CONVERGED" in line:
-                converged = True
-    return converged
-
-
 if __name__ == "__main__":
-    not_converged = [i for i in os.listdir() if i.endswith(".out") and not conv(i)]
-    print("Files not converged:")
+
+    grep = os.popen("grep -i 'HURRAY' *.out").read()
+    converged = [i.split()[0][:-1] for i in grep.split("\n") if len(i.split()) > 1]
+
+    ls = os.popen("ls *.out").read()
+    all_out_files = ls.split()
+
+    not_converged = [j for j in all_out_files if not j in converged]
+
+    print()
+    print("{} file(s) in this directory have not converged".format(len(not_converged)))
     print("\n".join(not_converged))
-    print(len(not_converged))
+
