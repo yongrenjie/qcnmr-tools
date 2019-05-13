@@ -49,7 +49,7 @@ if __name__ == '__main__':
             atoms_to_keep = int(test_file.readline().strip())
 
     # set ORCA keyword line depending on user input
-    default_keyword_line = "! TPSS def2-SVP D3BJ CPCM(Methanol) Opt PAL8"
+    default_keyword_line = "! TPSS def2-SVP D3BJ CPCM(Methanol) SP PAL8"
     keyword_line = input("The default keyword line is: {} \n"
                          "Please enter the desired keyword line, "
                          "or leave blank to use the default keywords: ".format(default_keyword_line))
