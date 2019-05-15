@@ -18,8 +18,8 @@ def get_args():
 
 if __name__ == '__main__':
     args = get_args()
-    crest_file = args.crestname
-    csv_file = args.csvname
+    crest_file = args.crestfile
+    csv_file = args.csvfile
 
     # set ORCA keyword line depending on user input
     default_keyword_line = "! TPSS def2-SVP D3BJ CPCM(Methanol) Opt LooseOpt PAL8"
