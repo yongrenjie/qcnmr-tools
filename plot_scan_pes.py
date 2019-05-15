@@ -19,6 +19,8 @@ if __name__ == '__main__':
         for line in out_file:
             if "The Calculated Surface using the 'Actual Energy'" in line:
                 results = True
+            if len(line.split()) == 0:
+                results = False
             if results:
                 if len(line.split()) == 2:
                     x.append(float(line.split()[0]))
