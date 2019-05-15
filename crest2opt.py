@@ -6,11 +6,11 @@ import os
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("crestname", action='store', help='crest_conformers.xyz file')
-    parser.add_argument("csvname", action='store', help='csv file to filter conformers by')
-    parser.add_argument("--freq", action='store_true',
-                        help='Request numerical frequency calculation after optimisation')
-    parser.add_argument("-r", "--remove", action="store", type=int, default=0,
+    parser.add_argument("-cr", "--crestfile", action='store', default='crest_conformers.xyz',
+                        help='crest_conformers.xyz file (default) crest_conformers.xyz')
+    parser.add_argument("-cs", "--csvfile", action='store', default='../s2-sp/sp_filtered_conformers.csv',
+                        help='csv file to filter conformers by (default ../s2-sp/sp_filtered_conformers.csv')
+    parser.add_argument("--remove", action="store", type=int, default=0,
                         help="Number of atoms to remove from the end of each set of coordinates")
     parser.add_argument("--constrain", action="store", type=int,
                         help="Number of atoms at the end of each set of coordinates to constrain during optimisation")
@@ -21,10 +21,13 @@ if __name__ == '__main__':
     crest_file = args.crestname
     csv_file = args.csvname
 
-    keywords = "! TPSS def2-SVP D3BJ CPCM(Methanol) PAL4 Opt "
-
-    if args.freq:
-        keywords = keywords + "NumFreq "
+    # set ORCA keyword line depending on user input
+    default_keyword_line = "! TPSS def2-SVP D3BJ CPCM(Methanol) Opt LooseOpt PAL8"
+    keyword_line = input("The default keyword line is: {} \n"
+                         "Please enter the desired keyword line, "
+                         "or leave blank to use the default keywords: ".format(default_keyword_line))
+    if keyword_line.strip() == "":
+        keyword_line = default_keyword_line
 
     allowed_conformers = []
     allowed_conformer_energies = []
@@ -80,7 +83,7 @@ if __name__ == '__main__':
             if conformer_number in allowed_conformers:
                 if number_of_atoms_found:
                     atom_number = 0
-                    print(keywords, file=output_file)
+                    print(keyword_line, file=output_file)
                     print("", file=output_file)
                     if args.constrain:
                         print(geom_block, file=output_file)
