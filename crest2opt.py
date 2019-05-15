@@ -8,7 +8,7 @@ import sys
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-cr", "--crestfile", action='store', default='../s1-crest/crest_conformers.xyz',
-                        help='crest_conformers.xyz file (default) ../s1-crest/crest_conformers.xyz')
+                        help='crest_conformers.xyz file (default ../s1-crest/crest_conformers.xyz)')
     parser.add_argument("-cs", "--csvfile", action='store', default='../s2-sp/sp_filtered_conformers.csv',
                         help='csv file to filter conformers by (default ../s2-sp/sp_filtered_conformers.csv')
     parser.add_argument("--remove", action="store", type=int, default=0,
