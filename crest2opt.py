@@ -4,6 +4,7 @@ import re
 import argparse
 import os
 
+
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-cr", "--crestfile", action='store', default='crest_conformers.xyz',
@@ -15,6 +16,7 @@ def get_args():
     parser.add_argument("--constrain", action="store", type=int,
                         help="Number of atoms at the end of each set of coordinates to constrain during optimisation")
     return parser.parse_args()
+
 
 if __name__ == '__main__':
     args = get_args()
@@ -40,8 +42,6 @@ if __name__ == '__main__':
                 allowed_conformer_energies.append(float(line.split(",")[2]))
     print()
     print("Input files will be generated for {} conformers: {}".format(len(allowed_conformers), allowed_conformers))
-    if args.freq:
-        print("Frequency calculation requested.")
     print()
 
     # determine total number of atoms
