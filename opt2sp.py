@@ -23,7 +23,7 @@ if __name__ == '__main__':
     args = get_args()
     csv_file = args.csvname
 
-    keywords = "! TPSS def2-TZVPP D3BJ CPCM(Methanol) PAL4 SP"  # Change this if desired.
+    keywords = "! TPSS def2-TZVPP D3BJ CPCM(Methanol) PAL8 SP"  # Change this if desired.
 
     # reads in allowed conformers and their energies from the csv file
     allowed_conformers = []
