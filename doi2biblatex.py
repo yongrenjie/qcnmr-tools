@@ -18,6 +18,7 @@ journal_abbreviations_dict = {
     "Proceedings of the National Academy of Sciences": "Proc. Acad. Natl. Sci. U. S. A.",
     "The Journal of Chemical Physics": "J. Chem. Phys.",
     "Journal of Magnetic Resonance": "J. Magn. Reson.",
+    "Progress in Nuclear Magnetic Resonance Spectroscopy": "Prog. Nucl. Magn. Reson. Spectrosc.",
 }
 
 
