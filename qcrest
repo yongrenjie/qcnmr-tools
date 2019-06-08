@@ -3,6 +3,7 @@
 import os
 import argparse
 
+
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("filename", action='store', help='.xyz file(s) to convert and submit')
@@ -11,7 +12,9 @@ def get_args():
     parser.add_argument("-c", "--cutoff", type=int, help="Specify energy threshold to use (default 6)")
     parser.add_argument("-t", "--time", type=int, help="Specify length of MTD/MD runs (in ps)")
     parser.add_argument("-C", "--charge", type=int, help="Specify charge (default 0)")
+    parser.add_argument("-v1", action="store_true")
     return parser.parse_args()
+
 
 def print_bash_script(xyz_filename):
     args = get_args()
@@ -43,6 +46,8 @@ def print_bash_script(xyz_filename):
             crest_command = crest_command + "-len {} ".format(args.time)
         if args.charge:
             crest_command = crest_command + "-chrg {} ".format(args.charge)
+        if args.v1:
+            crest_command = crest_command + "-v1 "
         print('{} > $ORIG/{}_crest.out'.format(crest_command, base_name), file=bash_script)
         print('rm -f *.tmp', file=bash_script)
         print('cp -R * $ORIG', file=bash_script)
