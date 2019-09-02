@@ -8,7 +8,7 @@ from crossref.restful import Works, Etiquette
 import sys
 import pyperclip
 my_etiquette = Etiquette('DOI to BibLaTeX',
-                         '1.0',
+                         '1.1',
                          'https://github.com/yongrenjie/qcnmr-tools/blob/master/doi2biblatex.py',
                          'yongrenjie@gmail.com')
 
@@ -20,7 +20,6 @@ journal_abbreviations_dict = {
     "Journal of Magnetic Resonance": "J. Magn. Reson.",
     "Progress in Nuclear Magnetic Resonance Spectroscopy": "Prog. Nucl. Magn. Reson. Spectrosc.",
 }
-
 
 
 def parse_given_names(given_names):
@@ -42,10 +41,23 @@ def remove_spaces(names):
 if __name__ == '__main__':
     works = Works(etiquette=my_etiquette)
 
+    clip = False
     if len(sys.argv) == 2:
         doi = sys.argv[1]
+    elif len(sys.argv) == 3:
+        # Checks if "-c" is one of the command-line options
+        # If so, sets doi to the other one and enables clipboard; if not, sets doi to the longer option (useful for typos)
+        if sys.argv[1] == "-c":
+            doi = sys.argv[2]
+            clip = True
+        elif sys.argv[2] == "-c":
+            doi = sys.argv[1]
+            clip = True
+        else:
+            doi = sys.argv[1] if len(sys.argv[1]) >= len(sys.argv[2]) else sys.argv[2]
     else:
-        doi = input("Please enter DOI: ")
+        sys.exit("Please specify a valid DOI. You can use the optional -c argument to copy the reference to the clipboard.")
+
 
     doi_dict = works.doi(doi)
 
@@ -105,9 +117,10 @@ if __name__ == '__main__':
         biblatex_citation = biblatex_citation + "pages = {{{}}},\n".format(pages)
     biblatex_citation = biblatex_citation + "}"
 
-    print()
     print(biblatex_citation)
     print()
-    pyperclip.copy(biblatex_citation)
-    print("Reference copied to clipboard.")
-    print()
+
+    if clip:
+        pyperclip.copy(biblatex_citation)
+        print("Reference copied to clipboard.")
+        print()
