@@ -18,7 +18,10 @@ journal_abbreviations_dict = {
     "Proceedings of the National Academy of Sciences": "Proc. Acad. Natl. Sci. U. S. A.",
     "The Journal of Chemical Physics": "J. Chem. Phys.",
     "Journal of Magnetic Resonance": "J. Magn. Reson.",
+    "Journal of Magnetic Resonance (1969)": "J. Magn. Reson.", # technically should be "J. Magn. Reson. (1969)", but that's just silly
     "Progress in Nuclear Magnetic Resonance Spectroscopy": "Prog. Nucl. Magn. Reson. Spectrosc.",
+    "Magn Reson Chem": "Magn. Reson. Chem.",
+    "Chemical Physics Letters": "Chem. Phys. Lett.",
 }
 
 
@@ -118,9 +121,9 @@ if __name__ == '__main__':
     biblatex_citation = biblatex_citation + "}"
 
     print(biblatex_citation)
-    print()
 
     if clip:
         pyperclip.copy(biblatex_citation)
+        print()
         print("Reference copied to clipboard.")
         print()
