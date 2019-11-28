@@ -50,7 +50,7 @@ def print_bash_script(xyz_filename):
             crest_command = crest_command + "-v1 "
         print('{} > $ORIG/{}.out'.format(crest_command, base_name), file=bash_script)
         print('rm -f *.tmp', file=bash_script)
-        print('cp *.out *.xyz $ORIG', file=bash_script)
+        print('cp *.out crest_conformers.xyz crest_best.xyz $ORIG', file=bash_script)
         print('cd /', file=bash_script)
         print('rm -Rf $SCR', file=bash_script)
         return sh_filename
