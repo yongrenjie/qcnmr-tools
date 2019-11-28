@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+import re
+
+if __name__=="__main__":
+    m_filename = sys.argv[1] # Not in the mood for fancy stuff here
+    sh_filename = m_filename.replace(".m", ".sh")
+    out_filename = m_filename.replace(".m", ".out")
+
+    nprocs = 1
+    # Find number of processors. Assumes a line like parpool('local', 16) in the script. Otherwise defaults to 1
+    with open(m_filename, "r") as m_file:
+        for line in m_file:
+            s = re.match("parpool\(.*?(\d+)\)", line)
+            if s:
+                nprocs = int(s.group(1))
+                break
+
+    with open(sh_filename, "w") as sh_file:
+        print("#!/bin/csh", file=sh_file)
+        print("#", file=sh_file)
+        print("#$ -cwd", file=sh_file)
+        print("#$ -pe smp {}".format(nprocs), file=sh_file)
+        print("#$ -l s_rt=360:00:00", file=sh_file)
+        print("setenv ORIG $PWD", file=sh_file)
+        print("setenv SCR $TMPDIR", file=sh_file)
+        print("mkdir -p $SCR", file=sh_file)
+        print("cp {} $SCR".format(m_filename), file=sh_file)
+        print("cd $SCR", file=sh_file)
+        print("matlab -nodisplay -nosplash -nodesktop -r \"run('{}'); exit;\" > {}".format(m_filename, out_filename), file=sh_file)
+        print("cp {} $ORIG".format(out_filename), file=sh_file)
+        print("cd /", file=sh_file)
+        print("rm -Rf $SCR", file=sh_file)
+        print("cd $ORIG", file=sh_file)
+        print("rm *.sh", file=sh_file)
+        print("rm *.sh*", file=sh_file)
+        print("", file=sh_file)
+
+    # os.system('qsub ' + sh_filename)
