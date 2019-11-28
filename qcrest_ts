@@ -7,11 +7,11 @@ import argparse
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("filename", action='store', help='.xyz file(s) to convert and submit')
-    parser.add_argument("-s", "--solv", action="store", help="Specify solvent to be used (GBSA) (default gas phase)")
-    parser.add_argument("-T", "--threads", type=int, default=4, help="Specify number of threads to use (default 4)")
-    parser.add_argument("-c", "--cutoff", type=int, help="Specify energy threshold to use (default 6)")
-    parser.add_argument("-t", "--time", type=int, help="Specify length of MTD/MD runs (in ps)")
-    parser.add_argument("-C", "--charge", type=int, help="Specify charge (default 0)")
+    parser.add_argument("-g", action="store", help="Specify solvent to be used (GBSA) (default gas phase)")
+    parser.add_argument("-T", type=int, default=4, help="Specify number of threads to use (default 4)")
+    parser.add_argument("-ewin", type=float, help="Specify energy threshold to use in kcal/mol (default 6)")
+    parser.add_argument("-mdlen", type=int, help="Specify length of MTD/MD runs in ps")
+    parser.add_argument("-chrg", type=int, help="Specify charge (default 0)")
     parser.add_argument("-a", "--atoms", type=int, nargs="*", help="Atoms to constrain (separate by spaces)")
     parser.add_argument("-v1", action="store_true", help="Use MF/MD/GC protocol instead of metadynamics")
     return parser.parse_args()
@@ -26,7 +26,7 @@ def print_bash_script(xyz_filename):
         print('#', file=bash_script)
         print('#$ -cwd', file=bash_script)
         print('#', file=bash_script)
-        print('#$ -pe smp {}'.format(args.threads), file=bash_script)
+        print('#$ -pe smp {}'.format(args.T), file=bash_script)
         print('#$ -l s_rt=360:00:00', file=bash_script)
         print('#', file=bash_script)
         print('module load mpi/openmpi3-x86_64', file=bash_script)
@@ -34,24 +34,23 @@ def print_bash_script(xyz_filename):
         print('export SCR=$TMPDIR', file=bash_script)
         print('mkdir -p $SCR', file=bash_script)
         print('cp coord coord.original .constrains $SCR', file=bash_script)
-        print('#', file=bash_script)
         print('cd $SCR', file=bash_script)
-        crest_command = "crest_2.6 -nmr "
-        if args.solv:
-            crest_command = crest_command + "-g {} ".format(args.solv)
-        if args.threads:
-            crest_command = crest_command + "-T {} ".format(args.threads)
-        if args.cutoff:
-            crest_command = crest_command + "-ewin {} ".format(args.cutoff)
-        if args.time:
-            crest_command = crest_command + "-len {} ".format(args.time)
-        if args.charge:
-            crest_command = crest_command + "-chrg {} ".format(args.charge)
+        crest_command = "crest -nmr "
+        if args.g:
+            crest_command = crest_command + "-g {} ".format(args.g)
+        if args.T:
+            crest_command = crest_command + "-T {} ".format(args.T)
+        if args.ewin:
+            crest_command = crest_command + "-ewin {} ".format(args.ewin)
+        if args.mdlen:
+            crest_command = crest_command + "-len {} ".format(args.mdlen)
+        if args.chrg:
+            crest_command = crest_command + "-chrg {} ".format(args.chrg)
         if args.v1:
             crest_command = crest_command + "-v1 "
-        print('{} > $ORIG/{}_crest.out'.format(crest_command, base_name), file=bash_script)
+        print('{} > $ORIG/{}.out'.format(crest_command, base_name), file=bash_script)
         print('rm -f *.tmp', file=bash_script)
-        print('cp -R * $ORIG', file=bash_script)
+        print('cp *.out *.xyz $ORIG', file=bash_script)
         print('cd /', file=bash_script)
         print('rm -Rf $SCR', file=bash_script)
         return sh_filename
@@ -60,7 +59,8 @@ def print_bash_script(xyz_filename):
 def qsub_bash_script(sh_filename):
     os.system('qsub ' + sh_filename)
 
-
+# In practice the conversion to coord format should not be needed for crest version >=2.7.
+# However I retain it for the time being as I don't want to mess things up
 def xyz_to_coord(xyz_filename):
     args = get_args()
 
