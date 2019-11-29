@@ -22,28 +22,23 @@ def print_bash_script(inp_filename, ca, cs, notrashtmp):
 
     sh_filename = str(inp_filename.replace('.inp', '.sh'))
 
-    keyword_line = ''
-    with open(inp_filename, 'r') as inp_file:
-        for line in inp_file:
-            if line.startswith('!'):
-                keyword_line = line
-
     with open(sh_filename, 'w') as bash_script:
         print('#!/bin/bash', file=bash_script)
         print('#SBATCH --ntasks-per-node=16', file=bash_script)
-        print('#SBATCH --time=0:09:00', file=bash_script)
+        print('#SBATCH --time=0:09:59', file=bash_script)
         print('#SBATCH --job-name=' + inp_filename.replace('.inp', ''), file=bash_script)
         print('module load orca/4.2.0', file=bash_script)
         print('export ORIG=$PWD', file=bash_script)
         print('export SCR=/scratch/$USER/$SLURM_JOB_ID', file=bash_script)
         print('mkdir -p $SCR', file=bash_script)
+        print('dos2unix ' + inp_filename, file=bash_script)
         if ca:
             print('cp * $SCR', file=bash_script)
         else:
             print('cp ' + inp_filename + ' $SCR', file=bash_script)
         print('#', file=bash_script)
         print('cd $SCR', file=bash_script)
-        print('/system/software/generic/orca/orca_4_2_0_linux_x86-64/orca $SCR/' + inp_filename + ' > $SCR/' + inp_filename.replace('.inp', '.out'), file=bash_script) 
+        print('/system/software/generic/orca/orca_4_2_0_linux_x86-64/orca $SCR/' + inp_filename + ' > $SCR/' + inp_filename.replace('.inp', '.out'), file=bash_script)
         if notrashtmp:
             pass
         else:
