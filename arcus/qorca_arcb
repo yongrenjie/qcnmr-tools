@@ -31,7 +31,7 @@ def print_bash_script(inp_filename, ca, cs, notrashtmp):
         print('export ORIG=$PWD', file=bash_script)
         print('export SCR=/scratch/$USER/$SLURM_JOB_ID', file=bash_script)
         print('mkdir -p $SCR', file=bash_script)
-        print('dos2unix ' + inp_filename, file=bash_script)
+        print('dos2unix ' + inp_filename + ' > /dev/null 2>&1', file=bash_script)
         if ca:
             print('cp * $SCR', file=bash_script)
         else:
