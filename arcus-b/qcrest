@@ -79,4 +79,6 @@ if __name__ == '__main__':
         if filename.endswith(".xyz"):
             sh_filename = print_bash_script(filename, args.ca, args.cs, args.chrg, args.g, args.ewin)
             run_sbatch(sh_filename)
+        else:
+            print("file {}: not submitted: does not have .xyz extension".format(filename))
 

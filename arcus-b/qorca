@@ -69,3 +69,5 @@ if __name__ == '__main__':
         if filename.endswith(".inp"):
             sh_filename = print_bash_script(filename, args.ca, args.cs, args.notrashtmp)
             run_sbatch(sh_filename)
+        else:
+            print("file (): not submitted: does not have .inp extension".format(filename))
