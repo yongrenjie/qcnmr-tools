@@ -25,7 +25,7 @@ def print_bash_script(inp_filename, ca, cs, notrashtmp):
     with open(sh_filename, 'w') as bash_script:
         print('#!/bin/bash', file=bash_script)
         print('#SBATCH --ntasks-per-node=16', file=bash_script)
-        print('#SBATCH --time=0:09:59', file=bash_script)
+        print('#SBATCH --time=6:00:00', file=bash_script)
         print('#SBATCH --job-name=' + inp_filename.replace('.inp', ''), file=bash_script)
         print('module load orca/4.2.0', file=bash_script)
         print('export ORIG=$PWD', file=bash_script)
@@ -38,7 +38,7 @@ def print_bash_script(inp_filename, ca, cs, notrashtmp):
             print('cp ' + inp_filename + ' $SCR', file=bash_script)
         print('#', file=bash_script)
         print('cd $SCR', file=bash_script)
-        print('/system/software/generic/orca/orca_4_2_0_linux_x86-64/orca $SCR/' + inp_filename + ' > $SCR/' + inp_filename.replace('.inp', '.out'), file=bash_script)
+        print('/system/software/generic/orca/orca_4_2_0_linux_x86-64/orca $SCR/' + inp_filename + ' > $ORIG/' + inp_filename.replace('.inp', '.out'), file=bash_script)
         if notrashtmp:
             pass
         else:
@@ -57,7 +57,7 @@ def print_bash_script(inp_filename, ca, cs, notrashtmp):
 
 def run_sbatch(script_filename):
 
-    os.system('sbatch --partition=devel ' + script_filename)
+    os.system('sbatch ' + script_filename)
 
     return 0
 
@@ -66,5 +66,6 @@ if __name__ == '__main__':
 
     args = get_args()
     for filename in args.filenames:
-        sh_filename = print_bash_script(filename, args.ca, args.cs, args.notrashtmp)
-        run_sbatch(sh_filename)
+        if filename.endswith(".inp"):
+            sh_filename = print_bash_script(filename, args.ca, args.cs, args.notrashtmp)
+            run_sbatch(sh_filename)
