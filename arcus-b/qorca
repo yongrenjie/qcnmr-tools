@@ -46,7 +46,7 @@ def print_bash_script(inp_filename, ca, cs, notrashtmp):
         if cs:
             print('cp * $ORIG', file=bash_script)
         else:
-            print('cp *.xyz *.allxyz *.out $ORIG > /dev/null 2>&1', file=bash_script)
+            print('cp *.xyz *.hess *.out $ORIG > /dev/null 2>&1', file=bash_script)
         print('cd / ', file=bash_script)
         print('rm -Rf $SCR', file=bash_script)
         print('cd $ORIG', file=bash_script)
