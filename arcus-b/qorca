@@ -51,6 +51,7 @@ def print_bash_script(inp_filename, ca, cs, notrashtmp):
         print('rm -Rf $SCR', file=bash_script)
         print('cd $ORIG', file=bash_script)
         print('rm "$ORIG"/*.sh*', file=bash_script)
+        print('rm "$ORIG"/slurm*.out', file=bash_script)
 
     return sh_filename
 
