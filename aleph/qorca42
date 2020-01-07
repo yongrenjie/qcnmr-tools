@@ -59,7 +59,7 @@ def print_bash_script(inp_filename, ca, cs, notrashtmp, np):
         print('#', file=bash_script)
         print('cd $SCR', file=bash_script)
         print(('/usr/local/orca_4_2_0_linux_x86-64/orca ' +
-              inp_filename + ' > ' + inp_filename.replace('.inp', '.out')), file=bash_script)
+              inp_filename + ' > $ORIG/' + inp_filename.replace('.inp', '.out')), file=bash_script)
         if notrashtmp:
             pass
         else:
