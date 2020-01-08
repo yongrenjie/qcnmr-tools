@@ -68,7 +68,7 @@ def print_bash_script(inp_filename, ca, cs, notrashtmp, np):
         if cs:
             print('cp -R * $ORIG', file=bash_script)
         else:
-            print('cp *.allxyz *.xyz *.out $ORIG', file=bash_script)
+            print('cp *.nbo *.allxyz *.xyz *.out $ORIG', file=bash_script)
         print('rm *.sh.*', file=bash_script)
 
     return sh_filename
