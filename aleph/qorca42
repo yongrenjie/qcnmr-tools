@@ -29,6 +29,7 @@ def print_bash_script(inp_filename, ca, cs, notrashtmp, np):
         for line in inp_file:
             if line.startswith('!'):
                 keyword_line = line
+                break
 
     nprocs = 1
 
